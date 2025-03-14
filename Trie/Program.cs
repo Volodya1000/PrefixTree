@@ -1,4 +1,5 @@
-﻿namespace Trie;
+﻿using static System.Console;
+namespace Trie;
 
 class Program
 {
@@ -15,41 +16,45 @@ class Program
 
         while (true)
         {
-            Console.WriteLine("\nМеню:");
-            Console.WriteLine("1. Добавить слово");
-            Console.WriteLine("2. Найти слово");
-            Console.WriteLine("3. Показать дерево");
-            Console.WriteLine("4. Найти верхнюю границу");
-            Console.WriteLine("5. Найти нижнюю границу");
-            Console.WriteLine("6. Выход");
-            Console.Write("Выберите пункт: ");
+            WriteLine("\nМеню:");
+            WriteLine("1. Добавить слово");
+            WriteLine("2. Найти слово");
+            WriteLine("3. Показать дерево");
+            WriteLine("4. Найти верхнюю границу");
+            WriteLine("5. Найти нижнюю границу");
+            WriteLine("6. Подменю поиска");
+            WriteLine("7. Выход");
+            Write("Выберите пункт: ");
 
-            var choice = Console.ReadLine();
+            var choice = ReadLine();
             switch (choice)
             {
                 case "1":
-                    Console.Write("Введите слово для добавления: ");
+                    Write("Введите слово для добавления: ");
                     InsertCommand(trie);
                     break;
                 case "2":
-                    Console.Write("Введите слово для поиска: ");
+                    Write("Введите слово для поиска: ");
                     SearchCommand(trie);
                     break;
                 case "3":
                     trie.Display();
                     break;
                 case "4":
-                    Console.Write("Введите слово для верхней границы: ");
+                    Write("Введите слово для верхней границы: ");
                     UpperCommand(trie);
                     break;
                 case "5":
-                    Console.Write("Введите слово для нижней границы: ");
+                    Write("Введите слово для нижней границы: ");
                     LowerCommand(trie);
                     break;
                 case "6":
+                    TrieSubMenu.Run(trie);
+                    break;
+                case "7":
                     return;
                 default:
-                    Console.WriteLine("Неверный выбор!");
+                    WriteLine("Неверный выбор!");
                     break;
             }
         }
@@ -57,36 +62,36 @@ class Program
 
     static void InsertCommand(Trie trie)
     {
-        string word = Console.ReadLine().Trim();
+        string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
         trie.Insert(bits);
-        Console.WriteLine($"Добавлено: {word} ({bits})");
+        WriteLine($"Добавлено: {word} ({bits})");
     }
 
     static void SearchCommand(Trie trie)
     {
-        string word = Console.ReadLine().Trim();
+        string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
         bool found = trie.Search(bits);
-        Console.WriteLine($"Результат поиска: {found}");
+        WriteLine($"Результат поиска: {found}");
     }
 
     static void UpperCommand(Trie trie)
     {
-        string word = Console.ReadLine().Trim();
+        string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
         string upper = trie.Upper(bits);
-        Console.WriteLine(upper == null
+        WriteLine(upper == null
             ? "Верхняя граница не найдена"
             : $"Верхняя граница: {BitHelper.BitStringToString(upper)} ({upper})");
     }
 
     static void LowerCommand(Trie trie)
     {
-        string word = Console.ReadLine().Trim();
+        string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
         string lower = trie.Lower(bits);
-        Console.WriteLine(lower == null
+        WriteLine(lower == null
             ? "Нижняя граница не найдена"
             : $"Нижняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
     }
@@ -104,7 +109,7 @@ class Program
                 
             // 3-chars
             "ABC", "ABD", "ACA", "ACB", "BAD", "BBA",
-            "BCA", "BCB", "CAB", "CBA", "DAB", "EAB",
+            "BCA", "BCB", "CAB", "CBA", "DAB", "EAB", "CAC",
                 
             // 4-chars
             "ABCD", "ABDA", "ACAA", "BACA", "BBAC",
@@ -117,6 +122,4 @@ class Program
     }
 
 }
-
-
 
