@@ -5,6 +5,8 @@ using static CritBit.BitHelper;
 namespace CritBit;
 public static class MiddlePrefixComputer
 {
+    private static int _prefixLength;
+
     public static string ComputeMiddlePrefix(string bitString1, 
         string bitString2, Trie trie, 
         bool roundUp,
@@ -49,6 +51,7 @@ public static class MiddlePrefixComputer
     private static string GetCommonPrefix(string a, string b, out int prefixLength)
     {
         prefixLength = FindCommonPrefixLength(a, b);
+        _prefixLength=prefixLength;
         return a.Substring(0, prefixLength);
     }
 
@@ -79,7 +82,7 @@ public static class MiddlePrefixComputer
         return (highPostfix, lowPostfix) switch
         {
             ("", "") => HandleBothEmpty(commonPrefix, logBuilder),
-            (_, "") => HandleLowEmpty(commonPrefix, highPostfix, trie, roundUp, TrieSubMenu.CurrentPrefixLength, logBuilder),
+            (_, "") => HandleLowEmpty(commonPrefix, highPostfix, trie, roundUp, logBuilder),
             ("", _) => HandleHighEmpty(commonPrefix, lowPostfix, trie, roundUp, logBuilder),
             _ => HandleBothNonEmpty(commonPrefix, highPostfix, lowPostfix, roundUp, logBuilder)
         };
@@ -96,11 +99,10 @@ public static class MiddlePrefixComputer
         string highPostfix,
         Trie trie,
         bool roundUp,
-        int currentPrefixLength,
         StringBuilder logBuilder)
     {
         logBuilder.AppendLine("\nПостфикс младшей строки пуст:");
-        var upperNeighbor = trie.Upper(commonPrefix, currentPrefixLength);
+        var upperNeighbor = trie.Upper(commonPrefix, _prefixLength);
         logBuilder.AppendLine($"Наименьший больший для префикса: {FormatBitString(upperNeighbor)}");
 
         var neighborSuffix = GetNeighborSuffix(commonPrefix, upperNeighbor);
@@ -124,7 +126,7 @@ public static class MiddlePrefixComputer
         StringBuilder logBuilder)
     {
         logBuilder.AppendLine("\nПостфикс старшей строки пуст:");
-        var lowerNeighbor = trie.Lower(commonPrefix,TrieSubMenu.CurrentPrefixLength);
+        var lowerNeighbor = trie.Lower(commonPrefix, _prefixLength);
         logBuilder.AppendLine($"Наибольший меньший префикс: {FormatBitString(lowerNeighbor)}");
 
         var neighborSuffix = GetNeighborSuffix(commonPrefix, lowerNeighbor);

@@ -6,7 +6,7 @@ public partial class Trie
     /// <summary>
     /// Находит ближайшую строку, которая больше заданной и имеет длину, кратную 8
     /// </summary>
-    public string Upper(string key, int prefixLength)
+    public string Upper__(string key, int prefixLength)
     {
         if (!IsValidByteString(key))
             throw new ArgumentException("Key length must be multiple of 8 bits");

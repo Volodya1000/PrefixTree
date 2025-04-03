@@ -10,7 +10,7 @@ class Program
 
         Trie trie = new Trie();
 
-        var _testData = GenerateTestData();
+        var _testData = GenerateTestData1();
 
         foreach (var item in _testData)
         {
@@ -28,6 +28,7 @@ class Program
             WriteLine("6. Upper (наименьшая большая)");
             WriteLine("7. Подменю поиска");
             WriteLine("8. Выход");
+            WriteLine("9. FindLastNodeInPath");
             Write("Выберите пункт: ");
 
             var choice = ReadLine();
@@ -57,15 +58,28 @@ class Program
                     UpperCommand(trie);
                     break;
                 case "7":
-                    TrieSubMenu.Run(trie);
+                    //TrieSubMenu.Run(trie);
+                    var trieSubMenu = new TrieSubMenu(trie);
+                    trieSubMenu.Run();
                     break;
                 case "8":
                     return;
+                case "9":
+                    FindLastNodeInPathCommand(trie);
+                         break;//HandlePrefixCheck(trie);
                 default:
                     WriteLine("Неверный выбор!");
                     break;
             }
         }
+    }
+
+    static void FindLastNodeInPathCommand(Trie trie)
+    {
+        string word = ReadLine().Trim();
+        string bits = BitHelper.StringToBitString(word);
+        (_,int nodeStoreCount,int busyInPathCount)= trie.FindLastNodeInPath(bits);
+        WriteLine($"Хранит: {nodeStoreCount} Занято: {busyInPathCount}");
     }
 
     static void InsertCommand(Trie trie)
@@ -112,6 +126,40 @@ class Program
         WriteLine(lower == null
             ? "Верхняя граница не найдена"
             : $"Верхняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
+    }
+
+    /// <summary> Проверка наличия префикса </summary>
+     static void HandlePrefixCheck(Trie trie)
+    {
+        var prefix = ReadLine().Trim();
+        var exists = trie.CheckSubstringExists(prefix);
+        WriteLine(exists ? "Префикс существует" : "Префикс НЕ существует");
+    }
+
+    /// <summary>
+    /// Получение валидного префикса от пользователя
+    /// </summary>
+    private static string GetValidPrefix()
+    {
+        while (true)
+        {
+            Write("Введите префикс: ");
+            var input = ReadLine()?.Trim();
+            var bits = BitHelper.StringToBitString(input ?? "");
+
+            if (bits.Length % 8 == 0)
+                return bits;
+
+            WriteLine("Ошибка: длина должна быть кратна 8 битам");
+        }
+    }
+
+    private static List<string> GenerateTestData1()
+    {
+        return new List<string>
+        {
+            "ABBB","ABC"
+        };
     }
 
     private  static List<string> GenerateTestData()
