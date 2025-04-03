@@ -1,4 +1,4 @@
-﻿namespace Trie;
+﻿namespace CritBit;
 
 public interface ITrie
 {

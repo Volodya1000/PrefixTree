@@ -1,4 +1,4 @@
-﻿namespace Trie.Test;
+﻿namespace CritBit.Test;
 
 public class TrieTests
 {

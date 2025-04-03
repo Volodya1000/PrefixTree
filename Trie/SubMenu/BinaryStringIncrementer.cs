@@ -1,68 +1,37 @@
 ﻿using System.Text;
 
-namespace Trie;
+namespace CritBit;
 
 public class BinaryStringIncrementer
 {
-    public static string GetNextSeniorString(string input)
+    public static string GetNextSeniorString(string binaryString)
     {
-        // Проверка валидности входной строки
-        if (input.Length % 8 != 0)
-            throw new ArgumentException("Длина входной строки должна быть кратна 8 битам");
-
-        // Разбиваем битовую строку на байты
-        List<byte> bytes = new List<byte>();
-        for (int i = 0; i < input.Length; i += 8)
+        if (string.IsNullOrEmpty(binaryString))
         {
-            string byteStr = input.Substring(i, 8);
-            bytes.Add(Convert.ToByte(byteStr, 2));
+            return Convert.ToString(255, 2).PadLeft(8, '0');
         }
 
-        // Конвертируем байты в цифры алфавита (A=1, B=2... Z=26)
-        List<int> digits = new List<int>();
-        foreach (byte b in bytes)
+        if (binaryString.Length % 8 != 0)
         {
-            char c = (char)b;
-            if (c < 'A' || c > 'Z')
-                throw new ArgumentException("Строка содержит недопустимые символы");
-            digits.Add(c - 'A' + 1);
+            throw new ArgumentException("Длина бинарной строки должна быть кратна 8.", nameof(binaryString));
         }
 
-        // Увеличиваем число с обработкой переносов
-        int carry = 1;
-        for (int i = digits.Count - 1; i >= 0; i--)
+        string lastByte = binaryString.Substring(binaryString.Length - 8);
+        if (lastByte == new string('1', 8))
         {
-            digits[i] += carry;
-            carry = digits[i] > 26 ? 1 : 0;
-            digits[i] = digits[i] > 26 ? digits[i] - 26 : digits[i];
+            //binaryString = binaryString.Substring(0, binaryString.Length - 8) + new string('1', 7)+ new string('0', 1);
+            binaryString += new string('1', 8);
+        }
+        else
+        {
+            int number = Convert.ToInt32(binaryString, 2) + 1;
+            binaryString = Convert.ToString(number, 2);
+
+            // Дополнить нулями до исходной длины или кратной 8, если необходимо
+            int minLength = (binaryString.Length + 7) / 8 * 8;
+            binaryString = binaryString.PadLeft(minLength, '0');
         }
 
-        // Добавляем новый разряд при необходимости
-        if (carry == 1)
-            digits.Insert(0, 1);
-
-        // Конвертируем обратно в битовую строку
-        StringBuilder result = new StringBuilder();
-        foreach (int digit in digits)
-        {
-            char c = (char)('A' + digit - 1);
-            result.Append(Convert.ToString(c, 2).PadLeft(8, '0'));
-        }
-
-        return result.ToString();
+        return binaryString;
     }
 }
-
-/*
-Проверка формата: Убеждаемся, что длина входной строки кратна 8 битам.
-
-Разбор байтов: Разбиваем битовую строку на 8-битные сегменты и конвертируем их в байты.
-
-Конвертация в цифры: Переводим каждый символ в числовое представление (A=1, B=2... Z=26).
-
-Инкремент с переносом: Увеличиваем число, обрабатывая переносы как в обычной арифметике, но в 26-ричной системе.
-
-Расширение результата: При переполнении добавляем новый старший разряд (например, Z → AA).
-
-Обратная конвертация: Преобразуем результат обратно в битовую строку с сохранением 8-битного формата для каждого символа.
- */

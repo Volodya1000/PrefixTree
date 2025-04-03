@@ -1,4 +1,4 @@
-﻿namespace Trie;
+﻿namespace CritBit;
 
 /// <summary>
 /// Узел префиксного дерева для хранения битовых строк

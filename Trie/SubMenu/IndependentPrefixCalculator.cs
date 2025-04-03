@@ -1,4 +1,4 @@
-﻿namespace Trie.SubMenu;
+﻿namespace CritBit.SubMenu;
 
 public class IndependentPrefixCalculator
 {

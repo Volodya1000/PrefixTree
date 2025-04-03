@@ -1,137 +1,298 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
 using static System.Console;
+using static CritBit.BitHelper;
+namespace CritBit;
 
-namespace Trie;
 /// <summary>
-/// Класс, реализующий подменю вычисления средней строки
+/// Класс для управления подменю работы с префиксами в CritBit дереве
 /// </summary>
 public static class TrieSubMenu
 {
-    // Константы для вычисления средней строки
-    const int X = 3;
-    const int Y = 4;
-    const int Z = 1;
+    private static Trie Root;
+    public static Trie CurrentNode;
+    private static string _currentPrefix = "";
+    private static string _prefix1;
+    private static string _prefix4;
+    private static readonly List<string> _outputBuffer = new();
+    public static bool EnableLogs = true;
+
+    public static int CurrentPrefixLength => _currentPrefix.Length;
 
     /// <summary>
-    /// Запуск подменю для вычисления средней строки
+    /// Основной метод запуска подменю
     /// </summary>
+    /// <param name="trie">Экземпляр CritBit дерева</param>
     public static void Run(Trie trie)
     {
-        WriteLine("\n--- Подменю вычисления средней строки ---");
-        // Запрос текущего префикса (должен быть кратен 8 битам)
-        string current  = GetValidPrefix();
-
-        // Вычисляем "старшую на 1" строку и кандидатов для пунктов 2 и 5
-        string nextStr = BinaryStringIncrementer.GetNextSeniorString(current);
-        string candidate2 = trie.Lower(nextStr); // наименьшая среди тех, что больше nextStr
-        string candidate5 = trie.Upper(nextStr); // наибольшая среди тех, что меньше nextStr
+        Root = trie;
+        CurrentNode = trie;
+        InitializePrefixes(trie);
 
         while (true)
         {
-            WriteLine("\nПодменю:");
-            WriteLine($"1. Текущий префикс: {BitHelper.BitStringToString(current)} ({current})");
-            WriteLine($"2. [Вверх] {(candidate2 != null ? BitHelper.BitStringToString(candidate2) + " (" + candidate2 + ")" : "нет кандидата")}");
-            WriteLine("3. ... (изменить пункт 5)");
-            WriteLine("4. ... (изменить пункт 2)");
-            WriteLine($"5. [Вниз] {(candidate5 != null ? BitHelper.BitStringToString(candidate5) + " (" + candidate5 + ")" : "нет кандидата")}");
-            WriteLine("6. Главное меню");
-            WriteLine("====== Для тестирования ==== ");
-            WriteLine("7. Строка старше на 1");
-            WriteLine("8. Среднее для двух строк");
-            Write("Выберите пункт подменю: ");
+            ProcessOutputBuffer();
+            DisplayMenu();
 
-            var choice = ReadLine();
-            switch (choice)
-            {
-                case "1":
-                    WriteLine($"Текущий префикс: {BitHelper.BitStringToString(current)} ({current})");
-                    break;
-                case "2":
-                    if (candidate2 != null)
-                    {
-                        current = candidate2;
-                        WriteLine("Новый текущий префикс принят из пункта 2.");
-                        nextStr = BinaryStringIncrementer.GetNextSeniorString(current);
-                        candidate2 = trie.Lower(nextStr);
-                        candidate5 = trie.Upper(nextStr);
-                    }
-                    else
-                    {
-                        WriteLine("Кандидат для пункта 2 не найден.");
-                    }
-                    break;
-                case "3":
-                    {
-                        // Пункты 1 и 2 остаются, пересчитываем пункт 5 на основе среднего(current, candidate2)
-                        string mid = MiddlePrefixСomputer.ComputeMiddlePrefix(current, candidate2);
-                        candidate5 = trie.Lower(mid);
-                        WriteLine("Пункт 5 обновлён на основе среднего текущего и пункта 2.");
-                    }
-                    break;
-                case "4":
-                    {
-                        // Пункты 1 и 5 остаются, пересчитываем пункт 2 на основе среднего(current, candidate5)
-                        string mid = MiddlePrefixСomputer.ComputeMiddlePrefix(current, candidate5);
-                        candidate2 = trie.Upper(mid);
-                        WriteLine("Пункт 2 обновлён на основе среднего текущего и пункта 5.");
-                    }
-                    break;
-                case "5":
-                    if (candidate5 != null)
-                    {
-                        current = candidate5;
-                        WriteLine("Новый текущий префикс принят из пункта 5.");
-                        nextStr = BinaryStringIncrementer.GetNextSeniorString(current);
-                        candidate2 = trie.Lower(nextStr);
-                        candidate5 = trie.Upper(nextStr);
-                    }
-                    else
-                    {
-                        WriteLine("Кандидат для пункта 5 не найден.");
-                    }
-                    break;
-                case "6":
-                    WriteLine("Выход в главное меню.");
-                    return;
-                case "7":
-                    string input = GetValidPrefix();
-                    string nextSeniorString = BinaryStringIncrementer.GetNextSeniorString(input);
-                    WriteLine($"{BitHelper.BitStringToString(nextSeniorString)} ({nextSeniorString})");
-                    WriteLine();
-                    break;
-                case "8":
-                    string first = GetValidPrefix();
-                    string second = GetValidPrefix();
-                    string midle=MiddlePrefixСomputer.ComputeMiddlePrefix(first, second);
-                    WriteLine($"==== Конец отладки =====");
-
-                    WriteLine($"Среднее: {BitHelper.BitStringToString(midle)} ({midle})");
-                    break;
-                default:
-                    WriteLine("Неверный выбор подменю.");
-                    break;
-            }
+            var choice = ReadLine()?.Trim();
+            if (ProcessChoice(choice, trie)) break;
         }
     }
 
-    
-    public static string GetValidPrefix()
+    #region Инициализация и отображение
+    /// <summary>
+    /// Инициализация начальных префиксов
+    /// </summary>
+    private static void InitializePrefixes(Trie trie)
     {
-        string current;
+        _prefix4 = trie.RightBranch(_currentPrefix);
+        _prefix1 = trie.Upper(_currentPrefix, CurrentPrefixLength);
+    }
+
+    /// <summary>
+    /// Обработка буфера вывода сообщений
+    /// </summary>
+    private static void ProcessOutputBuffer()
+    {
+        if(EnableLogs)
+            foreach (var message in _outputBuffer)
+                WriteLine(message);
+
+        _outputBuffer.Clear();
+    }
+
+    /// <summary>
+    /// Отображение меню с текущими состояниями
+    /// </summary>
+    private static void DisplayMenu()
+    {
+        WriteLine($"[{BitHelper.BitStringToString(_currentPrefix)}]");
+        WriteLine($"1. {(_prefix1 != null ? $"[{BitHelper.BitStringToString(_prefix1)}]" : "нет кандидата")}");
+        WriteLine("2. ...");
+        WriteLine("3. ...");
+        WriteLine($"4. {(_prefix4 != null ? $"[{BitHelper.BitStringToString(_prefix4)}]" : "нет кандидата")}");
+        WriteLine($"5. Начать с корня");
+        WriteLine("6. Главное меню");
+        /*WriteLine("====== Для тестирования ====");
+        WriteLine("7. Строка старше на 1");
+        WriteLine("8. Среднее для двух строк");
+        WriteLine("9. Проверка наличия префикса");
+        */
+        Write("Выберите пункт: ");
+    }
+    #endregion
+
+    #region Обработка выбора
+    /// <summary>
+    /// Обработка выбора пользователя
+    /// </summary>
+    /// <returns>True если нужно выйти в главное меню</returns>
+    private static bool ProcessChoice(string choice, Trie trie)
+    {
+        switch (choice)
+        {
+            case "1": HandleItem1(trie); break;
+            case "2": HandleItem2(trie); break;
+            case "3": HandleItem3(trie); break;
+            case "4": HandleItem4(trie); break;
+            case "5": StartFromRoot(trie); break;
+            case "6": return true; 
+            case "7": HandleSeniorString(); break;
+            case "8": HandleCustomAverage(trie); break;
+            case "9": HandlePrefixCheck(trie); break;
+            default: _outputBuffer.Add("Неверный выбор"); break;
+        }
+        return false;
+    }
+    #endregion
+
+    #region Обработчики действий
+
+
+    private static void StartFromRoot(Trie trie)
+    {
+        _currentPrefix = "";
+        CurrentNode = Root;
+        InitializePrefixes(trie);
+    }
+
+    private static void HandleItem1(Trie trie)
+    {
+        _outputBuffer.Add("Общий префикс обновляем на строку 1");
+        _currentPrefix = _prefix1;
+
+        string? rightBranchForPrefix1 = trie.RightBranch(_prefix1);
+        if (rightBranchForPrefix1 != null)
+        {
+            _outputBuffer.Add($"RightBranch для строки 1: {FormatBitString(rightBranchForPrefix1)}");
+            _prefix4 = rightBranchForPrefix1;
+        }
+        else
+            _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
+
+        string upperForPrefix1 = trie.Upper(_prefix1, CurrentPrefixLength);
+
+        if (upperForPrefix1 != null)
+        {
+            _prefix1 = upperForPrefix1;
+            _outputBuffer.Add($"Upper для строки 1: {FormatBitString(upperForPrefix1)}");
+        }
+        else
+            _outputBuffer.Add("Upper для строки 1 не существует");
+
+        _currentPrefix = ComputeComonPrefix(trie);
+    }
+    
+    private static void HandleItem4(Trie trie)
+    {
+        _outputBuffer.Add("Сохраняем строку 4 в строку 1");
+        _outputBuffer.Add("Общий префикс меняем на строку 4");
+        _prefix1 = _prefix4;
+
+        _currentPrefix = _prefix4;
+
+        string? rightBranchForPrefix4 = trie.RightBranch(_prefix4);
+        if (rightBranchForPrefix4 != null)
+        {
+            _outputBuffer.Add($"RightBranch для строки 4 существует: {FormatBitString(rightBranchForPrefix4)}");
+            _prefix4 = rightBranchForPrefix4;
+        }
+        else
+            _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
+
+        string upperForPrefix4 = trie.Upper(_prefix1, CurrentPrefixLength);
+
+        if (upperForPrefix4 != null)
+        { 
+            _prefix1 = upperForPrefix4;
+            _outputBuffer.Add($"Upper для строки 4: {FormatBitString(upperForPrefix4)}");
+        }
+
+        _currentPrefix = ComputeComonPrefix(trie);
+    }
+
+    private static void HandleItem2(Trie trie)
+    {
+        var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_prefix1, _prefix4, trie, roundUp: true, out string logs);
+        _outputBuffer.Add(logs);
+        _outputBuffer.Add($"Средняя: {FormatBitString(mid)}");
+
+        var lowerMid = trie.Lower(mid,CurrentPrefixLength);
+
+        if (trie.CheckSubstringExists(lowerMid))
+        {
+            _outputBuffer.Add($"Префикс Lower для средней существует: {FormatBitString(lowerMid)}");
+            _prefix4 = lowerMid;
+            _currentPrefix = ComputeComonPrefix(trie);
+        }
+        else
+        {
+            _outputBuffer.Add("Префикс Lower для средней НЕ существует");
+            ResetPrefixes();
+        }
+    }
+
+    /// <summary> Вычисление нижней средней </summary>
+    private static void HandleItem3(Trie trie)
+    {
+        var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_prefix1, _prefix4, trie, roundUp: false, out string logs);
+        _outputBuffer.Add(logs);
+        _outputBuffer.Add($"Средняя: {FormatBitString(mid)}");
+
+        if (trie.CheckSubstringExists(mid))
+        {
+            _outputBuffer.Add("Префикс средней существует");
+            _prefix1 = mid;
+        }
+        else
+        {
+            _outputBuffer.Add("Префикс средней НЕ существует");
+            var upperMid = trie.Upper(mid, CurrentPrefixLength);
+
+            if (trie.CheckSubstringExists(upperMid))
+            {
+                _outputBuffer.Add($"Префикс Upper для средней существует: {FormatBitString(upperMid)}");
+                _prefix1 = upperMid;
+                _currentPrefix = ComputeComonPrefix(trie);
+            }
+            else
+            {
+                _outputBuffer.Add("Префикс Upper для средней НЕ существует");
+                ResetPrefixes();
+            }
+        }
+    }
+    private static string ComputeComonPrefix(Trie trie)
+    {
+        _outputBuffer.Add("Обновление общего префикса");
+        int commomPrefixLength= FindCommonPrefixLength(_prefix1, _prefix4);
+        string rezult = _prefix1.Substring(0,commomPrefixLength);
+        return rezult;
+    }
+
+
+    /// <summary> Генерация старшей строки </summary>
+    private static void HandleSeniorString()
+    {
+        var input = GetValidPrefix();
+        var next = BinaryStringIncrementer.GetNextSeniorString(input);
+        _outputBuffer.Add($"{BitHelper.BitStringToString(next)} ({next})");
+    }
+
+    /// <summary> Вычисление среднего для произвольных строк </summary>
+    private static void HandleCustomAverage(Trie trie)
+    {
+        var first = GetValidPrefix();
+        var second = GetValidPrefix();
+        var mid = MiddlePrefixComputer.ComputeMiddlePrefix(first, second, trie, true, out string logs);
+        _outputBuffer.Add(logs);
+
+        _outputBuffer.Add($"Среднее: {BitHelper.BitStringToString(mid)} ({mid})");
+    }
+
+    /// <summary> Проверка наличия префикса </summary>
+    private static void HandlePrefixCheck(Trie trie)
+    {
+        var prefix = GetValidPrefix();
+        var exists = trie.CheckSubstringExists(prefix);
+        _outputBuffer.Add(exists ? "Префикс существует" : "Префикс НЕ существует");
+    }
+    #endregion
+
+    #region Вспомогательные методы
+    
+
+
+    /// <summary> Обновление префиксов после изменения текущего </summary>
+    //private static void UpdatePrefixes(Trie trie)
+    //{
+    //    _prefix1 = trie.RightBranch(_currentPrefix)?? _currentPrefix;
+    //    _prefix4 = trie.Lower(_currentPrefix);
+    //}
+
+    /// <summary> Сброс префиксов при ошибках </summary>
+    private static void ResetPrefixes()
+    {
+        _outputBuffer.Add("Приравниваем строку 1 и строку 4 к общему префиксу");
+        _prefix1 = _currentPrefix;
+        _prefix4 = _currentPrefix;
+    }
+
+    /// <summary>
+    /// Получение валидного префикса от пользователя
+    /// </summary>
+    private static string GetValidPrefix()
+    {
         while (true)
         {
-            Write("Введите текущий префикс (например, A): ");
-            string input = ReadLine()?.Trim();
-            if (string.IsNullOrEmpty(input))
-            {
-                WriteLine("Префикс не может быть пустым.");
-                continue;
-            }
-            current = BitHelper.StringToBitString(input);
-            if (current.Length % 8 == 0)
-                break;
-            WriteLine("Строка должна быть кратна 8 битам.");
+            Write("Введите префикс (например, A): ");
+            var input = ReadLine()?.Trim();
+            var bits = BitHelper.StringToBitString(input ?? "");
+
+            if (bits.Length % 8 == 0)
+                return bits;
+
+            _outputBuffer.Add("Ошибка: длина должна быть кратна 8 битам");
         }
-        return current;
     }
+    #endregion
 }

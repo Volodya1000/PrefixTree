@@ -1,10 +1,13 @@
-﻿using static System.Console;
-namespace Trie;
+﻿using System.Text;
+using static System.Console;
+namespace CritBit;
 
 class Program
 {
     static void Main(string[] args)
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         Trie trie = new Trie();
 
         var _testData = GenerateTestData();
@@ -20,38 +23,43 @@ class Program
             WriteLine("1. Добавить слово");
             WriteLine("2. Найти слово");
             WriteLine("3. Показать дерево");
-            WriteLine("4. Найти верхнюю границу");
-            WriteLine("5. Найти нижнюю границу");
-            WriteLine("6. Подменю поиска");
-            WriteLine("7. Выход");
+            WriteLine("4. RightBranch");
+            WriteLine("5. Lower(наибольшая меньшая)");
+            WriteLine("6. Upper (наименьшая большая)");
+            WriteLine("7. Подменю поиска");
+            WriteLine("8. Выход");
             Write("Выберите пункт: ");
 
             var choice = ReadLine();
             switch (choice)
             {
                 case "1":
-                    Write("Введите слово для добавления: ");
+                    Write("Введите ключ для добавления: ");
                     InsertCommand(trie);
                     break;
                 case "2":
-                    Write("Введите слово для поиска: ");
+                    Write("Введите ключ для поиска: ");
                     SearchCommand(trie);
                     break;
                 case "3":
                     trie.Display();
                     break;
                 case "4":
-                    Write("Введите слово для верхней границы: ");
-                    UpperCommand(trie);
+                    Write("Введите ключ для RightBranch: ");
+                    RightBranchCommand(trie);
                     break;
                 case "5":
-                    Write("Введите слово для нижней границы: ");
+                    Write("Введите ключ для нижней границы: ");
                     LowerCommand(trie);
                     break;
                 case "6":
-                    TrieSubMenu.Run(trie);
+                    Write("Введите ключ для верхней границы: ");
+                    UpperCommand(trie);
                     break;
                 case "7":
+                    TrieSubMenu.Run(trie);
+                    break;
+                case "8":
                     return;
                 default:
                     WriteLine("Неверный выбор!");
@@ -76,24 +84,34 @@ class Program
         WriteLine($"Результат поиска: {found}");
     }
 
-    static void UpperCommand(Trie trie)
+    static void RightBranchCommand(Trie trie)
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string upper = trie.Upper(bits);
+        string upper = trie.RightBranch(bits);
         WriteLine(upper == null
-            ? "Верхняя граница не найдена"
-            : $"Верхняя граница: {BitHelper.BitStringToString(upper)} ({upper})");
+            ? "RightBranch не найдена"
+            : $"RightBranch: {BitHelper.BitStringToString(upper)} ({upper})");
     }
 
     static void LowerCommand(Trie trie)
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string lower = trie.Lower(bits);
+        string lower = trie.Lower(bits,0);
         WriteLine(lower == null
             ? "Нижняя граница не найдена"
             : $"Нижняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
+    }
+
+    static void UpperCommand(Trie trie)
+    {
+        string word = ReadLine().Trim();
+        string bits = BitHelper.StringToBitString(word);
+        string lower = trie.Upper(bits,0);
+        WriteLine(lower == null
+            ? "Верхняя граница не найдена"
+            : $"Верхняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
     }
 
     private  static List<string> GenerateTestData()
@@ -102,22 +120,31 @@ class Program
         {
             // 1-char
             "A", "B", "C", "D", "E",
-                
+
             // 2-chars
             "AB", "AC", "BA", "BB", "BC", "CA", "CB",
             "DA", "DB", "EA", "EB",
-                
+
             // 3-chars
             "ABC", "ABD", "ACA", "ACB", "BAD", "BBA",
             "BCA", "BCB", "CAB", "CBA", "DAB", "EAB", "CAC",
-                
+
             // 4-chars
             "ABCD", "ABDA", "ACAA", "BACA", "BBAC",
             "BCAA", "CABB", "CBAA", "DABA", "EABC",
-                
+
             // 5-chars
             "ABCDE", "ABDAC", "BACDE", "BCAAB", "CABDE",
-            "CBAAA", "DABEA", "EABCD", "EBACD"
+            "CBAAA", "DABEA", "EABCD", "EBACD",
+
+            //,
+
+            "BBBBBBBBBBBBB",
+            
+            "BBCCCC"
+            ,"BBBBBBBBBBBBA",
+            "BBBBBBB"
+            //"CAB","CAC","CABB","CABDE"
         };
     }
 
