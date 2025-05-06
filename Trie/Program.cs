@@ -21,14 +21,13 @@ class Program
         {
             WriteLine("\nМеню:");
             WriteLine("1. Добавить слово");
-            WriteLine("2. Найти слово");
-            WriteLine("3. Показать дерево");
-            WriteLine("4. RightBranch");
-            WriteLine("5. Lower(наибольшая меньшая)");
-            WriteLine("6. Upper (наименьшая большая)");
-            WriteLine("7. Подменю поиска");
-            WriteLine("8. Выход");
-            WriteLine("9. FindLastNodeInPath");
+            WriteLine("2. Показать дерево");
+            WriteLine("3. RightBranch");
+            WriteLine("4. Lower(наибольшая меньшая)");
+            WriteLine("5. Upper (наименьшая большая)");
+            WriteLine("6. Подменю поиска");
+            WriteLine("7. Выход");
+            WriteLine("8. FindLastNodeInPath");
             Write("Выберите пункт: ");
 
             var choice = ReadLine();
@@ -39,25 +38,21 @@ class Program
                     InsertCommand(trie);
                     break;
                 case "2":
-                    Write("Введите ключ для поиска: ");
-                    SearchCommand(trie);
-                    break;
-                case "3":
                     WriteLine(trie.GetASCII());
                     break;
-                case "4":
+                case "3":
                     Write("Введите ключ для RightBranch: ");
                     RightBranchCommand(trie);
                     break;
-                case "5":
+                case "4":
                     Write("Введите ключ для нижней границы: ");
                     LowerCommand(trie);
                     break;
-                case "6":
+                case "5":
                     Write("Введите ключ для верхней границы: ");
                     UpperCommand(trie);
                     break;
-                case "7":
+                case "6":
                     //TrieSubMenu.Run(trie);
                     var trieSubMenu = new 
                         //TrieSubMenu(trie);
@@ -65,9 +60,9 @@ class Program
 
                     trieSubMenu.Run();
                     break;
-                case "8":
+                case "7":
                     return;
-                case "9":
+                case "8":
                     FindLastNodeInPathCommand(trie);
                          break;//HandlePrefixCheck(trie);
                 default:
@@ -91,14 +86,6 @@ class Program
         string bits = BitHelper.StringToBitString(word);
         trie.Insert(bits);
         WriteLine($"Добавлено: {word} ({bits})");
-    }
-
-    static void SearchCommand(Trie trie)
-    {
-        string word = ReadLine().Trim();
-        string bits = BitHelper.StringToBitString(word);
-        bool found = trie.Search(bits);
-        WriteLine($"Результат поиска: {found}");
     }
 
     static void RightBranchCommand(Trie trie)

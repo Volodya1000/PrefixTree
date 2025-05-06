@@ -75,4 +75,19 @@ public partial class Trie
             newCommonNode.IsEnd = true;
         }
     }
+
+
+    /// <summary>
+    /// Поиск длины общего префикса для двух строк
+    /// </summary>
+    private int FindCommonPrefix(string a, string b)
+    {
+        int minLength = Math.Min(a.Length, b.Length);
+        for (int i = 0; i < minLength; i++)
+        {
+            if (a[i] != b[i])
+                return i;
+        }
+        return minLength;
+    }
 }
