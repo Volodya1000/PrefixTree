@@ -60,8 +60,6 @@ public static class BitHelper
         return Encoding.GetEncoding(1251).GetString(bytes);
     }
 
-
-
     /// <summary>
     /// Преобразует строку в целое число.
     /// </summary>
@@ -153,5 +151,38 @@ public static class BitHelper
                 return i - (i % 8);
         }
         return maxLength - (maxLength % 8);
+    }
+
+
+    /// <summary>
+    /// Возвращает постфикс надстроки, следующий за подстрокой.
+    /// </summary>
+    public static string GetPostfix(string mainString, string subString)
+    {
+        // Проверяем, содержится ли подстрока в надстроке
+        int index = mainString.IndexOf(subString);
+
+        // Если подстрока найдена
+        if (index != -1)
+        {
+            // Возвращаем постфикс
+            return mainString.Substring(index + subString.Length);
+        }
+        else
+        {
+            // Если подстрока не найдена, возвращаем пустую строку или сообщение об ошибке
+            return string.Empty; // или throw new ArgumentException("Подстрока не найдена");
+        }
+    }
+
+    public static string CutRightZeros(string bitString)
+    {
+        int trailingZeorCount = bitString.Reverse().TakeWhile(c=>c == '0').Count();
+
+        int removeCount = trailingZeorCount - (trailingZeorCount % 8);
+
+        if (removeCount > 0)
+            return bitString.Remove(bitString.Length-removeCount, removeCount);
+        else return bitString;
     }
 }

@@ -50,7 +50,7 @@ public class TrieSubMenu
     private void InitializePrefixes()
     {
         _prefix4 = _trie.RightBranch(_currentPrefix);
-        _prefix1 = _trie.Upper(_currentPrefix, CurrentPrefixLength);
+        _prefix1 = _trie.UpperApril(_currentPrefix, CurrentPrefixLength);
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public class TrieSubMenu
         else
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
 
-        string upperForPrefix1 = _trie.Upper(_prefix1, CurrentPrefixLength);
+        string upperForPrefix1 = _trie.UpperApril(_prefix1, CurrentPrefixLength);
 
         if (upperForPrefix1 != null)
         {
@@ -154,7 +154,7 @@ public class TrieSubMenu
         else
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
 
-        string upperForPrefix4 = _trie.Upper(_prefix1, CurrentPrefixLength);
+        string upperForPrefix4 = _trie.UpperApril(_prefix1, CurrentPrefixLength);
 
         if (upperForPrefix4 != null)
         {
@@ -171,7 +171,7 @@ public class TrieSubMenu
         _outputBuffer.Add(logs);
         _outputBuffer.Add($"Средняя: {FormatBitString(mid)}");
 
-        var lowerMid = _trie.Lower(mid, CurrentPrefixLength);
+        var lowerMid = _trie.LowerApril(mid, CurrentPrefixLength);
 
         if (_trie.CheckSubstringExists(lowerMid))
         {
@@ -201,7 +201,7 @@ public class TrieSubMenu
         else
         {
             _outputBuffer.Add("Префикс средней НЕ существует");
-            var upperMid = _trie.Upper(mid, CurrentPrefixLength);
+            var upperMid = _trie.UpperApril(mid, CurrentPrefixLength);
 
             if (_trie.CheckSubstringExists(upperMid))
             {

@@ -4,6 +4,8 @@ public partial class Trie
 {
     public bool CheckSubstringExists(string bitString)
     {
+        if(String.IsNullOrEmpty(bitString))
+            return false;//
         if (bitString.Length % 8 != 0)
             throw new ArgumentException("Bit string length must be multiple of 8");
 

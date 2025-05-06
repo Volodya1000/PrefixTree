@@ -43,7 +43,7 @@ class Program
                     SearchCommand(trie);
                     break;
                 case "3":
-                    trie.Display();
+                    WriteLine(trie.GetASCII());
                     break;
                 case "4":
                     Write("Введите ключ для RightBranch: ");
@@ -59,7 +59,10 @@ class Program
                     break;
                 case "7":
                     //TrieSubMenu.Run(trie);
-                    var trieSubMenu = new TrieSubMenu(trie);
+                    var trieSubMenu = new 
+                        //TrieSubMenu(trie);
+                     TrieSubMenuPostfix(trie);
+
                     trieSubMenu.Run();
                     break;
                 case "8":
@@ -112,7 +115,7 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string lower = trie.Lower(bits,0);
+        string lower = trie.LowerApril(bits,0);
         WriteLine(lower == null
             ? "Нижняя граница не найдена"
             : $"Нижняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
@@ -122,7 +125,7 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string lower = trie.Upper(bits,0);
+        string lower = trie.UpperApril(bits,0);
         WriteLine(lower == null
             ? "Верхняя граница не найдена"
             : $"Верхняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
@@ -158,7 +161,7 @@ class Program
     {
         return new List<string>
         {
-            "ABBB","ABC"
+            "ABA","ABBBBBBBBBB","ABD","ABE"
         };
     }
 

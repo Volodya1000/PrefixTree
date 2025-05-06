@@ -37,6 +37,7 @@ public static class MiddlePrefixComputer
         return result;
     }
 
+
     private static (string high, string low) OrderStrings(string a, string b)
     {
         return string.Compare(a, b) > 0 ? (a, b) : (b, a);
@@ -102,7 +103,7 @@ public static class MiddlePrefixComputer
         StringBuilder logBuilder)
     {
         logBuilder.AppendLine("\nПостфикс младшей строки пуст:");
-        var upperNeighbor = trie.Upper(commonPrefix, _prefixLength);
+        var upperNeighbor = trie.UpperApril(commonPrefix, _prefixLength);
         logBuilder.AppendLine($"Наименьший больший для префикса: {FormatBitString(upperNeighbor)}");
 
         var neighborSuffix = GetNeighborSuffix(commonPrefix, upperNeighbor);
@@ -126,7 +127,7 @@ public static class MiddlePrefixComputer
         StringBuilder logBuilder)
     {
         logBuilder.AppendLine("\nПостфикс старшей строки пуст:");
-        var lowerNeighbor = trie.Lower(commonPrefix, _prefixLength);
+        var lowerNeighbor = trie.LowerApril(commonPrefix, _prefixLength);
         logBuilder.AppendLine($"Наибольший меньший префикс: {FormatBitString(lowerNeighbor)}");
 
         var neighborSuffix = GetNeighborSuffix(commonPrefix, lowerNeighbor);
@@ -178,7 +179,7 @@ public static class MiddlePrefixComputer
         int secondValue = BitHelper.BinaryToInt(second);
 
         var (average, roundingDesc) = CalculateAverage(firstValue, secondValue, roundUp);
-        string averageBinary = BitHelper.IntToBinary(average);
+        string averageBinary = CutRightZeros(BitHelper.IntToBinary(average));
 
         logBuilder.AppendLine($"Вычисление среднего {roundingDesc} {context}:");
         logBuilder.AppendLine($"- Первое значение:  {FormatBitString(first)} ({firstValue})");
