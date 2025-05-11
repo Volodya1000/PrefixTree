@@ -103,7 +103,7 @@ public static class MiddlePrefixComputer
         StringBuilder logBuilder)
     {
         logBuilder.AppendLine("\nПостфикс младшей строки пуст:");
-        var upperNeighbor = trie.UpperApril(commonPrefix, _prefixLength);
+        var upperNeighbor = trie.Upper(commonPrefix, _prefixLength);
         logBuilder.AppendLine($"Наименьший больший для префикса: {FormatBitString(upperNeighbor)}");
 
         var neighborSuffix = GetNeighborSuffix(commonPrefix, upperNeighbor);
@@ -127,7 +127,7 @@ public static class MiddlePrefixComputer
         StringBuilder logBuilder)
     {
         logBuilder.AppendLine("\nПостфикс старшей строки пуст:");
-        var lowerNeighbor = trie.LowerApril(commonPrefix, _prefixLength);
+        var lowerNeighbor = trie.Lower(commonPrefix, _prefixLength);
         logBuilder.AppendLine($"Наибольший меньший префикс: {FormatBitString(lowerNeighbor)}");
 
         var neighborSuffix = GetNeighborSuffix(commonPrefix, lowerNeighbor);
@@ -237,7 +237,7 @@ public static class MiddlePrefixComputer
         }
         else if (lowPostfix == "")
         {
-            string upper = trie.UpperApril(commonPrefix, prefixLength);
+            string upper = trie.Upper(commonPrefix, prefixLength);
             string upperSuffix = upper.Substring(prefixLength, Math.Min(8, upper.Length - prefixLength));
             upperSuffix = upperSuffix.PadRight(8, '0');
 
@@ -249,7 +249,7 @@ public static class MiddlePrefixComputer
         }
         else if (highPostfix == "")
         {
-            string lower = trie.LowerApril(commonPrefix, prefixLength);
+            string lower = trie.Lower(commonPrefix, prefixLength);
             string lowerSuffix = lower.Substring(prefixLength, Math.Min(8, lower.Length - prefixLength));
             lowerSuffix = lowerSuffix.PadRight(8, '0');
 

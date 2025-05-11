@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CritBit;
+﻿namespace CritBit;
 
 
 /// <summary>
@@ -16,7 +14,4 @@ public partial class Trie
     }
 
     public Trie(TrieNode rootNode)=>root = rootNode;
-
-   
-
 }

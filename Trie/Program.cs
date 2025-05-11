@@ -1,5 +1,6 @@
-﻿using System.Text;
-using static System.Console;
+﻿global using static CritBit.BitHelper;
+global using static System.Console;
+using System.Text;
 namespace CritBit;
 
 class Program
@@ -53,11 +54,8 @@ class Program
                     UpperCommand(trie);
                     break;
                 case "6":
-                    //TrieSubMenu.Run(trie);
                     var trieSubMenu = new 
-                        //TrieSubMenu(trie);
                      TrieSubMenuPostfix(trie);
-
                     trieSubMenu.Run();
                     break;
                 case "7":
@@ -102,7 +100,7 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string lower = trie.LowerApril(bits,0);
+        string lower = trie.Lower(bits,0);
         WriteLine(lower == null
             ? "Нижняя граница не найдена"
             : $"Нижняя граница: {BitHelper.BitStringToString(lower)} ({lower})");
@@ -112,7 +110,7 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string lower = trie.UpperApril(bits,0);
+        string lower = trie.Upper(bits,0);
         WriteLine(lower == null
             ? "Верхняя граница не найдена"
             : $"Верхняя граница: {BitHelper.BitStringToString(lower)} ({lower})");

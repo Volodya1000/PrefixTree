@@ -1,7 +1,4 @@
-﻿using static System.Console;
-using static CritBit.BitHelper;
-
-namespace CritBit;
+﻿namespace CritBit;
 
 /// <summary>
 /// Класс для управления подменю работы с префиксами в CritBit дереве
@@ -191,23 +188,19 @@ public class TrieSubMenuPostfix
 
     private void HandleItem2()
     {
-
         previusCurrentPreffix = _currentPrefix;
-
 
         var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_postfix1, _postfix4, CurrentNode, roundUp: true, out string logs);
         _outputBuffer.Add(logs);
         _outputBuffer.Add($"Средняя: {FormatBitString(ConcatCurrentPrefixWithPostfix(mid))}");
 
-        var lowerMid = CurrentNode.LowerApril(mid, CurrentPrefixLength);
+        var lowerMid = CurrentNode.Lower(mid, CurrentPrefixLength);
 
-        if (!String.IsNullOrEmpty(lowerMid) )//&& CurrentNode.CheckSubstringExists(lowerMid))
+        if (!String.IsNullOrEmpty(lowerMid))
         {
             _outputBuffer.Add($"Префикс Lower для средней существует: {FormatBitString(ConcatCurrentPrefixWithPostfix(lowerMid))}");
             _postfix4 = lowerMid;
-            // _currentPrefix = ComputeComonPrefix();
 
-            //UpdateCurrentNode(_currentPrefix);
             ComputeComonPrefixAndUpdateCurrentNode();
         }
         else
@@ -222,8 +215,6 @@ public class TrieSubMenuPostfix
     {
         previusCurrentPreffix = _currentPrefix;
 
-
-
         var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_postfix1, _postfix4, CurrentNode, roundUp: true, out string logs);
         _outputBuffer.Add(logs);
         _outputBuffer.Add($"Средняя: {FormatBitString(ConcatCurrentPrefixWithPostfix(mid))}");
@@ -236,16 +227,13 @@ public class TrieSubMenuPostfix
         else
         {
             _outputBuffer.Add("Префикс средней НЕ существует");
-            var upperMid = CurrentNode.UpperApril(mid, CurrentPrefixLength);
+            var upperMid = CurrentNode.Upper(mid, CurrentPrefixLength);
 
-            if (CurrentNode.CheckSubstringExists(upperMid, tookFromRoot: currentNodeBitStoreCount))
+            if (!String.IsNullOrEmpty(upperMid))//CurrentNode.CheckSubstringExists(upperMid, tookFromRoot: currentNodeBitStoreCount))
             {
                 _outputBuffer.Add($"Префикс Upper для средней существует: {FormatBitString(ConcatCurrentPrefixWithPostfix(upperMid))}");
                 _postfix1 = upperMid;
 
-                //_currentPrefix = ComputeComonPrefix();
-
-                //UpdateCurrentNode(_currentPrefix);
                 ComputeComonPrefixAndUpdateCurrentNode();
             }
             else
@@ -295,10 +283,7 @@ public class TrieSubMenuPostfix
         _postfix1 = "";
         _postfix4 = "";
     }
-
-    //private string ConcatCurrentPrefixWithPostfix(string postfix) => previusCurrentPreffix + postfix;//.Substring(CurrentPrefixLength);
-
-    private string ConcatCurrentPrefixWithPostfix(string postfix) => _currentPrefix + postfix;//.Substring(CurrentPrefixLength);
+   private string ConcatCurrentPrefixWithPostfix(string postfix) => _currentPrefix + postfix;
 
 
     private void UpdateCurrentNode(string bitString)
