@@ -293,7 +293,7 @@ public class TrieSubMenuPostfix
 
     private TrieNode FindCurrentPrefixNode(string bitString)
     {
-        (TrieNode newCurrentNode, _, currentNodeBitStoreCount) = CurrentNode.FindLastNodeInPath(bitString);
+        (TrieNode newCurrentNode, _, currentNodeBitStoreCount) = CurrentNode.FindLastNodeInPath(bitString, tookFromRoot: currentNodeBitStoreCount);
         return newCurrentNode;
     }
     #endregion

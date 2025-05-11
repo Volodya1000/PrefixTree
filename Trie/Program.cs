@@ -74,7 +74,7 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        (_,int nodeStoreCount,int busyInPathCount)= trie.FindLastNodeInPath(bits);
+        (_,int nodeStoreCount,int busyInPathCount)= trie.FindLastNodeInPath(bits,0);
         WriteLine($"Хранит: {nodeStoreCount} Занято: {busyInPathCount}");
     }
 
