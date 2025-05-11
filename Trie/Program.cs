@@ -122,7 +122,7 @@ class Program
      static void HandlePrefixCheck(Trie trie)
     {
         var prefix = ReadLine().Trim();
-        var exists = trie.CheckSubstringExists(prefix);
+        var exists = trie.CheckSubstringExists(prefix,0);
         WriteLine(exists ? "Префикс существует" : "Префикс НЕ существует");
     }
 

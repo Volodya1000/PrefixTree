@@ -1,4 +1,5 @@
-﻿namespace CritBit;
+﻿using static CritBit.BitHelper;
+namespace CritBit;
 
 public partial class Trie
 {

@@ -2,30 +2,52 @@
 
 public partial class Trie
 {
-    public bool CheckSubstringExists(string bitString)
+    public bool CheckSubstringExists(string bitString, int tookFromRoot)
     {
-        if(String.IsNullOrEmpty(bitString))
-            return false;//
+        if (string.IsNullOrEmpty(bitString))
+            return false;
+
         if (bitString.Length % 8 != 0)
             throw new ArgumentException("Bit string length must be multiple of 8");
 
-        return CheckSubstringExistsRecursive(root, bitString);
+        if (tookFromRoot < 0 || tookFromRoot > root.BitString.Length)
+            throw new ArgumentOutOfRangeException(nameof(tookFromRoot));
+
+        // Проверяем, что взятая часть корня соответствует началу битовой строки
+        string rootSubstring = root.BitString.Substring(tookFromRoot);
+        if (!bitString.StartsWith(rootSubstring))
+            return false;
+
+        // Обрезаем проверенную часть корня
+        string remaining = bitString.Substring(rootSubstring.Length);
+
+        return CheckSubstringExistsRecursive(root, remaining);
     }
 
     private bool CheckSubstringExistsRecursive(TrieNode node, string remainingBits)
     {
-        if (remainingBits.StartsWith(node.BitString))
+        if (remainingBits.Length == 0)
+            return true;
+
+        foreach (var child in new[] { node.ZeroChild, node.OneChild })
         {
-            string newRemaining = remainingBits.Substring(node.BitString.Length);
-            if (newRemaining.Length == 0) return true;
-           
-            return (node.ZeroChild != null && CheckSubstringExistsRecursive(node.ZeroChild, newRemaining)) ||
-                   (node.OneChild != null && CheckSubstringExistsRecursive(node.OneChild, newRemaining));
+            if (child == null) continue;
+
+            // Проверяем полное совпадение
+            if (remainingBits.StartsWith(child.BitString))
+            {
+                string newRemaining = remainingBits.Substring(child.BitString.Length);
+                if (CheckSubstringExistsRecursive(child, newRemaining))
+                    return true;
+            }
+            // Проверяем частичное совпадение (оставшиеся биты - префикс данных узла)
+            else if (child.BitString.StartsWith(remainingBits))
+            {
+                return true;
+            }
         }
-        else
-        {
-            return node.BitString.StartsWith(remainingBits);
-        }
+
+        return false;
     }
 
 }

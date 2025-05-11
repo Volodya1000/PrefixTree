@@ -228,7 +228,7 @@ public class TrieSubMenuPostfix
         _outputBuffer.Add(logs);
         _outputBuffer.Add($"Средняя: {FormatBitString(ConcatCurrentPrefixWithPostfix(mid))}");
 
-        if (!String.IsNullOrEmpty(mid)&& CurrentNode.CheckSubstringExists(mid))
+        if (!String.IsNullOrEmpty(mid)&& CurrentNode.CheckSubstringExists(mid, tookFromRoot: currentNodeBitStoreCount))
         {
             _outputBuffer.Add("Префикс средней существует");
             _postfix1 = mid;
@@ -238,7 +238,7 @@ public class TrieSubMenuPostfix
             _outputBuffer.Add("Префикс средней НЕ существует");
             var upperMid = CurrentNode.UpperApril(mid, CurrentPrefixLength);
 
-            if (CurrentNode.CheckSubstringExists(upperMid))
+            if (CurrentNode.CheckSubstringExists(upperMid, tookFromRoot: currentNodeBitStoreCount))
             {
                 _outputBuffer.Add($"Префикс Upper для средней существует: {FormatBitString(ConcatCurrentPrefixWithPostfix(upperMid))}");
                 _postfix1 = upperMid;
@@ -304,8 +304,6 @@ public class TrieSubMenuPostfix
     private void UpdateCurrentNode(string bitString)
     {
         CurrentNode = new Trie(FindCurrentPrefixNode(bitString.Substring(previusCurrentPreffixLength)));
-
-
     }
 
     private TrieNode FindCurrentPrefixNode(string bitString)
