@@ -4,54 +4,46 @@ public partial class Trie
 {
     public (TrieNode, int nodeStoreCount, int busyInPathCount) FindLastNodeInPath(string bitString)
     {
-        // Текущий узел, начинаем с корня дерева
         TrieNode currentNode = root;
-        // Оставшаяся часть битовой строки для обработки
         string remaining = bitString;
 
-        // Пока есть необработанные биты в строке
         while (remaining.Length > 0)
         {
-            bool foundChild = false;
+            bool foundFullMatch = false;
 
-            // Проверяем всех детей текущего узла
-            foreach (var child in currentNode.Children.ToList())
+            // Проверяем ZeroChild
+            if (currentNode.ZeroChild != null && remaining.StartsWith(currentNode.ZeroChild.BitString))
             {
-                // Если дочерний узел полностью совпадает с началом remaining
-                if (remaining.StartsWith(child.BitString))
-                {
-                    // Уменьшаем remaining на длину битовой строки дочернего узла
-                    remaining = remaining.Substring(child.BitString.Length);
-                    // Переходим в этот дочерний узел
-                    currentNode = child;
-                    foundChild = true;
-                    break;
-                }
+                remaining = remaining.Substring(currentNode.ZeroChild.BitString.Length);
+                currentNode = currentNode.ZeroChild;
+                foundFullMatch = true;
+            }
+            // Проверяем OneChild, если ZeroChild не подошел
+            else if (currentNode.OneChild != null && remaining.StartsWith(currentNode.OneChild.BitString))
+            {
+                remaining = remaining.Substring(currentNode.OneChild.BitString.Length);
+                currentNode = currentNode.OneChild;
+                foundFullMatch = true;
             }
 
-            // Если не нашли полного совпадения с детьми
-            if (!foundChild)
+            if (!foundFullMatch)
             {
-                // Проверяем частичное совпадение (remaining - префикс битовой строки ребенка)
-                foreach (var child in currentNode.Children)
+                // Поиск частичного совпадения (remaining - префикс битовой строки ребенка)
+                if (currentNode.ZeroChild != null && currentNode.ZeroChild.BitString.StartsWith(remaining))
                 {
-                    if (child.BitString.StartsWith(remaining))
-                    {
-                        // Возвращаем:
-                        // 1. Найденный дочерний узел (последний в пути)
-                        // 2. Общее количество бит в этом узле (длина его BitString)
-                        // 3. Количество занятых бит (длина remaining - сколько бит из узла использовано)
-                        return (child, child.BitString.Length, remaining.Length);
-                    }
+                    return (currentNode.ZeroChild, currentNode.ZeroChild.BitString.Length, remaining.Length);
                 }
-                // Теоретически недостижимо, так как CheckSubstringExists гарантирует существование
-                Console.WriteLine($"Недостижим путь: {BitHelper.BitStringToString(bitString)} ({bitString})");
-                throw new InvalidOperationException("Путь недостижим");
+                if (currentNode.OneChild != null && currentNode.OneChild.BitString.StartsWith(remaining))
+                {
+                    return (currentNode.OneChild, currentNode.OneChild.BitString.Length, remaining.Length);
+                }
+
+                // Если CheckSubstringExists гарантирует существование пути, эта ошибка не должна возникать
+                throw new InvalidOperationException($"Путь недостижим: {BitHelper.BitStringToString(bitString)}");
             }
         }
 
-        // Если обработали все биты (remaining пуст) - текущий узел последний
-        // В этом случае все биты узла полностью заняты в пути
+        // Все биты обработаны - текущий узел последний
         return (currentNode, currentNode.BitString.Length, currentNode.BitString.Length);
     }
 }

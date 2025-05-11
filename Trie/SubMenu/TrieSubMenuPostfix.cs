@@ -54,7 +54,7 @@ public class TrieSubMenuPostfix
     /// </summary>
     private void InitializePrefixes()
     {
-        _postfix4 = CurrentNode.RightBranch(_currentPrefix);
+        _postfix4 = CurrentNode.RightBranch(0);
         _postfix1 = CurrentNode.LeftBranch(0);//CurrentNode.Upper(_currentPrefix, CurrentPrefixLength);
     }
 

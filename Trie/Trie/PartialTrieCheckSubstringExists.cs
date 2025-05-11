@@ -14,22 +14,14 @@ public partial class Trie
 
     private bool CheckSubstringExistsRecursive(TrieNode node, string remainingBits)
     {
-        // Проверяем полное совпадение части узла с началом оставшихся бит
         if (remainingBits.StartsWith(node.BitString))
         {
             string newRemaining = remainingBits.Substring(node.BitString.Length);
-            if (newRemaining.Length == 0)
-                return true;
-
-            // Рекурсивно проверяем дочерние узлы
-            foreach (var child in node.Children)
-            {
-                if (CheckSubstringExistsRecursive(child, newRemaining))
-                    return true;
-            }
-            return false;
+            if (newRemaining.Length == 0) return true;
+           
+            return (node.ZeroChild != null && CheckSubstringExistsRecursive(node.ZeroChild, newRemaining)) ||
+                   (node.OneChild != null && CheckSubstringExistsRecursive(node.OneChild, newRemaining));
         }
-        // Проверяем частичное совпадение (оставшиеся биты - префикс данных узла)
         else
         {
             return node.BitString.StartsWith(remainingBits);

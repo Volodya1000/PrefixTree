@@ -185,4 +185,10 @@ public static class BitHelper
             return bitString.Remove(bitString.Length-removeCount, removeCount);
         else return bitString;
     }
+
+    public static int CalculateK(int x)
+    {
+        int k = (int)Math.Floor(x / 8.0) * 8;
+        return Math.Clamp(k, 8, 96);
+    }
 }

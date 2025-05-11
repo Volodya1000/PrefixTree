@@ -5,74 +5,71 @@ public partial class Trie
     /// <summary>
     /// Вставка битовой строки в дерево
     /// </summary>
-    /// <param name="bitString">Вставляемая битовая строка</param>
-    public void Insert(string bitString)
-    {
-        InsertRecursive(root, bitString);
-    }
+    public void Insert(string bitString) => InsertRecursive(root, bitString);
 
     /// <summary>
     /// Рекурсивная вставка с автоматическим разделением узлов
     /// </summary>
     private void InsertRecursive(TrieNode node, string remainingBits)
     {
-        // Поиск общего префикса с существующими дочерними узлами
-        foreach (var child in node.Children.ToList())
+        if (remainingBits.Length == 0) return;
+
+        char currentBit = remainingBits[0];
+        TrieNode child = (currentBit == '0') ? node.ZeroChild : node.OneChild; 
+
+        if (child != null)
         {
             int commonLength = FindCommonPrefix(child.BitString, remainingBits);
-
-            if (commonLength > 0)
+            if (commonLength == child.BitString.Length)
             {
-                if (commonLength == child.BitString.Length)
-                {
-                    // Если общий префикс полность совпадает - переходим к ребенку
-                    InsertRecursive(child, remainingBits.Substring(commonLength));
-                    return;
-                }
-                else
-                {
-                    // Разделяем узел при частичном совпадении
-                    SplitChildNode(node, child, commonLength, remainingBits);
-                    return;
-                }
+                InsertRecursive(child, remainingBits.Substring(commonLength));
             }
-        }
-
-        // Создаем новый узел если нет совпадений
-        TrieNode newChild = new TrieNode(remainingBits);
-        newChild.IsEnd = true;
-        node.Children.Add(newChild);
-    }
-
-    /// <summary>
-    /// Разделение узла при частичном совпадении префиксов
-    /// </summary>
-    private void SplitChildNode(TrieNode parentNode, TrieNode childNode, int commonLength, string remainingBits)
-    {
-        // Разделяем битовую строку узла
-        string commonPart = childNode.BitString.Substring(0, commonLength);
-        string childRemaining = childNode.BitString.Substring(commonLength);
-        string newRemaining = remainingBits.Substring(commonLength);
-
-        // Создаем новый узел для общего префикса
-        parentNode.Children.Remove(childNode);
-        TrieNode newCommonNode = new TrieNode(commonPart);
-        parentNode.Children.Add(newCommonNode);
-
-        // Перенастраиваем оригинальный узел
-        childNode.BitString = childRemaining;
-        newCommonNode.Children.Add(childNode);
-
-        // Добавляем новый узел для оставшихся битов
-        if (newRemaining.Length > 0)
-        {
-            TrieNode newChild = new TrieNode(newRemaining);
-            newChild.IsEnd = true;
-            newCommonNode.Children.Add(newChild);
+            else
+            {
+                SplitChildNode(node, child, commonLength, remainingBits);
+            }
         }
         else
         {
-            newCommonNode.IsEnd = true;
+            TrieNode newNode = new TrieNode(remainingBits);
+            newNode.IsEnd = true;
+            if (currentBit == '0')
+                node.ZeroChild = newNode;
+            else
+                node.OneChild = newNode;
+        }
+    }
+
+    private void SplitChildNode(TrieNode parent, TrieNode child, int commonLen, string remaining)
+    {
+        string common = child.BitString.Substring(0, commonLen);
+        string childRemaining = child.BitString.Substring(commonLen);
+        string newRemaining = remaining.Substring(commonLen);
+
+        TrieNode commonNode = new TrieNode(common);
+        if (common[0] == '0')
+            parent.ZeroChild = commonNode;
+        else
+            parent.OneChild = commonNode;
+
+        child.BitString = childRemaining;
+        if (childRemaining[0] == '0')
+            commonNode.ZeroChild = child;
+        else
+            commonNode.OneChild = child;
+
+        if (newRemaining.Length > 0)
+        {
+            TrieNode newNode = new TrieNode(newRemaining);
+            newNode.IsEnd = true;
+            if (newRemaining[0] == '0')
+                commonNode.ZeroChild = newNode;
+            else
+                commonNode.OneChild = newNode;
+        }
+        else
+        {
+            commonNode.IsEnd = true;
         }
     }
 

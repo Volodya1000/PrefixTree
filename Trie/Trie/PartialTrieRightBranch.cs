@@ -2,120 +2,34 @@
 
 public partial class Trie
 {
-    public string? RightBranchWithKey(string bitString)
+
+    public string? RightBranch(int tookFromRoot)
     {
-        TrieNode current=root;
-        //    = FindNode(bitString);
-        //if (current == null) return null;
-
-        string result = bitString;
-
-        //Получаем первого наследника
-        TrieNode firstChild= current.Children.FirstOrDefault(c => c.BitString.StartsWith("1"))
-           ?? current.Children.FirstOrDefault(c => c.BitString.StartsWith("0"));
-
-        if (firstChild == null) return null;
-
-        int firstChildLength = firstChild.BitString.Length;
-
-        //Смотрим сколько бит в первом наследнике 
-        if (firstChildLength >= 8)
-        {
-            int k = CalculateK(firstChildLength);
-            result += firstChild.BitString.Substring(0,k);
-            return result;
-        }
-
-        int targetResultLength = bitString.Length + 8;
-
-        while (result.Length < targetResultLength)
-        {
-            TrieNode nextChild = current.Children
-           .FirstOrDefault(c => c.BitString.StartsWith("1"))
-           ?? current.Children.FirstOrDefault(c => c.BitString.StartsWith("0"));
-
-            if (nextChild == null) break;
-
-            int available = nextChild.BitString.Length;
-            int needed = targetResultLength - result.Length;
-            int take = Math.Min(available, needed);
-
-            result+=nextChild.BitString.Substring(0, take);
-            current = nextChild;
-        }
-        return result;
-    }
-
-    public string? RightBranch(string bitString ="",int tookFromRoot=0)
-    {
-        TrieNode current = root;
-        //    = FindNode(bitString);
-        //if (current == null) return null;
-
         string result = "";
-
-        if (tookFromRoot != root.BitString.Length)
+        // Добавляем оставшиеся биты из корня
+        if (tookFromRoot < root.BitString.Length)
             result += root.BitString.Substring(tookFromRoot);
 
-        //Получаем первого наследника
-        TrieNode firstChild = current.Children.FirstOrDefault(c => c.BitString.StartsWith("1"))
-           ?? current.Children.FirstOrDefault(c => c.BitString.StartsWith("0"));
+        // Выбираем сначала OneChild, затем ZeroChild
+        TrieNode child = root.OneChild ?? root.ZeroChild;
+        if (child == null) return null;
 
-        if (firstChild == null) return null;
-
-        int firstChildLength = firstChild.BitString.Length;
-
-        //Смотрим сколько бит в первом наследнике 
-        if (firstChildLength >= 8)
+        if (child.BitString.Length >= 8)
         {
-            int k = CalculateK(firstChildLength);
-            result += firstChild.BitString.Substring(0, k);
+            int k = CalculateK(child.BitString.Length);
+            result += child.BitString.Substring(0, k);
             return result;
         }
 
-        while (result.Length < 8)
+        int targetLength = result.Length + 8;
+        while (result.Length < targetLength && child != null)
         {
-            TrieNode nextChild = current.Children
-           .FirstOrDefault(c => c.BitString.StartsWith("1"))
-           ?? current.Children.FirstOrDefault(c => c.BitString.StartsWith("0"));
-
-            if (nextChild == null) break;
-
-            int available = nextChild.BitString.Length;
-            int needed = 8 - result.Length;
-            int take = Math.Min(available, needed);
-
-            result += nextChild.BitString.Substring(0, take);
-            current = nextChild;
+            int needed = targetLength - result.Length;
+            int take = Math.Min(child.BitString.Length, needed);
+            result += child.BitString.Substring(0, take);
+            // Всегда сначала выбираем правого потомка 
+            child = child.OneChild ?? child.ZeroChild;
         }
-        return result;
+        return result.Length > targetLength ? result.Substring(0, targetLength) : result;
     }
-
-
-    private int CalculateK(int x)
-    {
-        int k = (int)Math.Floor(x / 8.0) * 8;
-        return Math.Clamp(k, 8, 96);
-    }
-
-    private TrieNode FindNode(string bitString)
-    {
-        return FindNodeRecursive(root, bitString);
-    }
-
-    private TrieNode FindNodeRecursive(TrieNode node, string remainingBits)
-    {
-        if (!remainingBits.StartsWith(node.BitString)) return null;
-
-        string newRemaining = remainingBits.Substring(node.BitString.Length);
-        if (newRemaining == "") return node;
-
-        foreach (var child in node.Children)
-        {
-            var found = FindNodeRecursive(child, newRemaining);
-            if (found != null) return found;
-        }
-        return null;
-    }
-
 }

@@ -92,7 +92,7 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        string upper = trie.RightBranch(bits);
+        string upper = trie.RightBranch(0);
         WriteLine(upper == null
             ? "RightBranch не найдена"
             : $"RightBranch: {BitHelper.BitStringToString(upper)} ({upper})");

@@ -4,187 +4,121 @@ public partial class Trie
 {
 
     //17.04
-    public string LowerApril(string key,int tookFromRoot)
+    public string LowerApril(string key, int tookFromRoot)
     {
-        string resultStart = "";
-        int shouldFindLength;
-
         string result = "";
+        string keyFirst8 = key.Substring(0, 8);
+        int canTakeFromRoot = root.BitString.Length - tookFromRoot;
 
-        //в качестве ключа учитываются только первые 8 бит ключа
-        string keyFirstBait = key.Substring(0, 8);
-
-        //сколько еще можно взять из корня
-        int canTakeFromRoot = root.BitString.Length - tookFromRoot; 
-        if (tookFromRoot != root.BitString.Length)
-            resultStart += root.BitString.Substring(tookFromRoot);
-
-        //Смотрим сколько бит в первом наследнике 
+        // Если можно взять достаточно бит из корня
         if (canTakeFromRoot >= 8)
         {
             int k = CalculateK(canTakeFromRoot);
-            string resultFromRoot = root.BitString.Substring(tookFromRoot, k);
-            return resultFromRoot;
+            return root.BitString.Substring(tookFromRoot, k);
         }
-        else if (canTakeFromRoot == 0)
+
+        string currentPath = "";
+        if (tookFromRoot < root.BitString.Length)
+            currentPath = root.BitString.Substring(tookFromRoot);
+
+        // Выбираем сначала ZeroChild, затем OneChild
+        TrieNode child = root.ZeroChild ?? root.OneChild;
+        if (child == null) return null;
+
+        // Если у потомка достаточно бит
+        if (child.BitString.Length >= 8)
         {
-            //Получаем первого наследника
-            TrieNode firstChild = root.Children.FirstOrDefault(c => c.BitString.StartsWith("0"))
-               ?? root.Children.FirstOrDefault(c => c.BitString.StartsWith("1"));
-
-            if (firstChild == null) return null;
-
-            int firstChildLength = firstChild.BitString.Length;
-
-            //Смотрим сколько бит в млпдшем наследнике  корня
-            if (firstChildLength >= 8)
-            {
-                int k = CalculateK(firstChildLength);
-                string resultFromFirstChild = firstChild.BitString.Substring(0, k);
-                return resultFromFirstChild;
-            }
-            else
-            { //обход в глубину добираем до длины 8
-                resultStart = firstChild.BitString; //берём биты до конца корня
-
-                LowerRecursive(root, resultStart, keyFirstBait, ref result);
-
-                return result;
-            }
+            int k = CalculateK(child.BitString.Length);
+            return child.BitString.Substring(0, k);
         }
-        else
-        {
-            resultStart = root.BitString.Substring(tookFromRoot); //берём биты до конца корня
-                                                                  //обход в глубину добираем до длины 8
 
-            LowerRecursive(root, resultStart, keyFirstBait, ref result);
-
-            return result;
-        }
+        // Рекурсивный поиск
+        LowerRecursive(child, currentPath, keyFirst8, ref result);
+        return result;
     }
 
-
-
-    /// <summary>
-    /// Рекурсивный обход дерева для поиска строки, которая наибольшая меньшая для key
-    /// </summary>
     private void LowerRecursive(TrieNode node, string currentString, string key, ref string result)
     {
-        // Если длина текущей строки кратна 8 и текущая строка меньше ключа, обновляем результат
+        // Добавляем биты из текущего узла (но не более 8)
+        int take = Math.Min(node.BitString.Length, 8 - currentString.Length);
+        currentString += node.BitString.Substring(0, take);
+
+        // Проверка достижения 8 бит
         if (currentString.Length == 8)
         {
             if (string.Compare(currentString, key) < 0)
             {
                 if (result == null || string.Compare(currentString, result) > 0)
-                {
                     result = currentString;
-                }
             }
-            //если currentString >key то обходить в глубину нет смысла
-            //так как ищем наибольшую МЕНЬШУЮ и поэтом удля оптимизации выходим
-            else
-                return;
+            return;
         }
 
-        // Обходим все дочерние узлы
-        foreach (var child in node.Children)
-        {
-            int shouldTake = Math.Min(child.BitString.Length,8- currentString.Length);
-            LowerRecursive(child, currentString + child.BitString.Substring(0, shouldTake), key, ref result);
-        }
+        // Рекурсивный обход: сначала ZeroChild, затем OneChild
+        if (node.ZeroChild != null)
+            LowerRecursive(node.ZeroChild, currentString, key, ref result);
+
+        if (node.OneChild != null)
+            LowerRecursive(node.OneChild, currentString, key, ref result);
     }
-
-
-
 
     public string UpperApril(string key, int tookFromRoot)
     {
-        string resultStart = "";
-        int shouldFindLength;
-
         string result = "";
-
-        //в качестве ключа учитываются только первые 8 бит ключа
-        string keyFirstBait = key.Substring(0, 8);
-
-        //сколько еще можно взять из корня
+        string keyFirst8 = key.Substring(0, 8);
         int canTakeFromRoot = root.BitString.Length - tookFromRoot;
-        if (tookFromRoot != root.BitString.Length)
-            resultStart += root.BitString.Substring(tookFromRoot);
 
-        //Смотрим сколько бит в первом наследнике 
         if (canTakeFromRoot >= 8)
         {
             int k = CalculateK(canTakeFromRoot);
-            string resultFromRoot = root.BitString.Substring(tookFromRoot, k);
-            return resultFromRoot;
+            return root.BitString.Substring(tookFromRoot, k);
         }
-        else if (canTakeFromRoot == 0)
+
+        string currentPath = "";
+        if (tookFromRoot < root.BitString.Length)
+            currentPath = root.BitString.Substring(tookFromRoot);
+
+        // Выбираем сначала OneChild, затем ZeroChild
+        TrieNode child = root.OneChild ?? root.ZeroChild;
+        if (child == null) return null;
+
+        if (child.BitString.Length >= 8)
         {
-            //Получаем первого наследника
-            TrieNode firstChild = root.Children.FirstOrDefault(c => c.BitString.StartsWith("1"))
-               ?? root.Children.FirstOrDefault(c => c.BitString.StartsWith("0"));
-
-            if (firstChild == null) return null;
-
-            int firstChildLength = firstChild.BitString.Length;
-
-            //Смотрим сколько бит в млпдшем наследнике  корня
-            if (firstChildLength >= 8)
-            {
-                int k = CalculateK(firstChildLength);
-                string resultFromFirstChild = firstChild.BitString.Substring(0, k);
-                return resultFromFirstChild;
-            }
-            else
-            { //обход в глубину добираем до длины 8
-                resultStart = firstChild.BitString; //берём биты до конца корня
-
-                UpperRecursive(root, resultStart, keyFirstBait, ref result);
-
-                return result;
-            }
+            int k = CalculateK(child.BitString.Length);
+            return child.BitString.Substring(0, k);
         }
-        else
-        {
-            resultStart = root.BitString.Substring(tookFromRoot); //берём биты до конца корня
-                                                                  //обход в глубину добираем до длины 8
 
-            UpperRecursive(root, resultStart, keyFirstBait, ref result);
-
-            return result;
-        }
+        UpperRecursive(child, currentPath, keyFirst8, ref result);
+        return result;
     }
 
-
-
-    /// <summary>
-    /// Рекурсивный обход дерева для поиска строки, которая наибольшая меньшая для key
-    /// </summary>
     private void UpperRecursive(TrieNode node, string currentString, string key, ref string result)
     {
-        // Если длина текущей строки кратна 8 и текущая строка меньше ключа, обновляем результат
+        int take = Math.Min(node.BitString.Length, 8 - currentString.Length);
+        currentString += node.BitString.Substring(0, take);
+
         if (currentString.Length == 8)
         {
             if (string.Compare(currentString, key) > 0)
             {
-                if (result == null || string.Compare(currentString, result) <0)
-                {
+                if (result == null || string.Compare(currentString, result) < 0)
                     result = currentString;
-                }
             }
-            //если currentString >key то обходить в глубину нет смысла
-            //так как ищем наибольшую МЕНЬШУЮ и поэтом удля оптимизации выходим
-            else
-                return;
+            return;
         }
 
-        // Обходим все дочерние узлы
-        foreach (var child in node.Children.OrderByDescending(c => c.BitString).ToList())
-        {
-            int shouldTake = Math.Min(child.BitString.Length, 8 - currentString.Length);
-            UpperRecursive(child, currentString + child.BitString.Substring(0, shouldTake), key, ref result);
-        }
+        // Рекурсивный обход: сначала OneChild, затем ZeroChild
+        if (node.OneChild != null)
+            UpperRecursive(node.OneChild, currentString, key, ref result);
+
+        if (node.ZeroChild != null)
+            UpperRecursive(node.ZeroChild, currentString, key, ref result);
+    }
+
+    private int CalculateK(int length)
+    {
+        int k = (length / 8) * 8;
+        return Math.Clamp(k, 8, 96);
     }
 
 

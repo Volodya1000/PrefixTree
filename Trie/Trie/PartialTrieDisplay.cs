@@ -14,15 +14,14 @@ public partial class Trie
 
     private void GetASCIIRecursive(TrieNode node, string indent, string accumulatedBits, bool last, StringBuilder sb)
     {
-        // Накопленная битовая строка по пути от корня
         string currentFullBits = accumulatedBits + node.BitString;
 
         // Формируем строку узла
-        sb.Append(indent);
-        sb.Append(last ? "└─ " : "├─ ");
-        sb.Append(node.BitString);
+        sb.Append(indent)
+          .Append(last ? "└─ " : "├─ ")
+          .Append(node.BitString);
 
-        // Для конечных узлов добавляем текстовое представление
+        // Добавляем текстовое представление для конечных узлов
         if (node.IsEnd)
         {
             string text = BitHelper.BitStringToString(currentFullBits);
@@ -31,47 +30,47 @@ public partial class Trie
 
         sb.AppendLine();
 
-        // Рекурсивный обход дочерних узлов
+        // Рекурсивный обход потомков (сначала ZeroChild, затем OneChild)
         string newIndent = indent + (last ? "   " : "│  ");
+        List<TrieNode> children = new List<TrieNode>();
 
-        var sortedChildren = node.Children.OrderBy(c => c.BitString).ToList();
+        // Собираем существующих потомков в порядке: ZeroChild -> OneChild
+        if (node.ZeroChild != null) children.Add(node.ZeroChild);
+        if (node.OneChild != null) children.Add(node.OneChild);
 
-        for (int i = 0; i < sortedChildren.Count; i++)
+        for (int i = 0; i < children.Count; i++)
         {
-            bool isLastChild = i == sortedChildren.Count - 1;
-            GetASCIIRecursive(sortedChildren[i], newIndent, currentFullBits, isLastChild, sb);
+            bool isLastChild = i == children.Count - 1;
+            GetASCIIRecursive(children[i], newIndent, currentFullBits, isLastChild, sb);
         }
     }
 
-    // <summary>
-    /// Визуализация дерева в консоли с ASCII-графикой для потомков корня
-    /// </summary>
     public string GetASCIIChildren(string prefix)
     {
         var sb = new StringBuilder();
-        var sortedChildren = root.Children.OrderBy(c => c.BitString).ToList();
+        List<TrieNode> rootChildren = new List<TrieNode>();
 
-        for (int i = 0; i < sortedChildren.Count; i++)
+        // Потомки корня: ZeroChild -> OneChild
+        if (root.ZeroChild != null) rootChildren.Add(root.ZeroChild);
+        if (root.OneChild != null) rootChildren.Add(root.OneChild);
+
+        for (int i = 0; i < rootChildren.Count; i++)
         {
-            bool isLastChild = i == sortedChildren.Count - 1;
-            GetASCII_ChildrenRecursive(sortedChildren[i], "", prefix, isLastChild, sb, prefix);
+            bool isLastChild = i == rootChildren.Count - 1;
+            GetASCII_ChildrenRecursive(rootChildren[i], "", prefix, isLastChild, sb, prefix);
         }
 
         return sb.ToString();
     }
 
-
-    private void GetASCII_ChildrenRecursive(TrieNode node, string indent, string accumulatedBits, bool last, StringBuilder sb,string prefix)
+    private void GetASCII_ChildrenRecursive(TrieNode node, string indent, string accumulatedBits, bool last, StringBuilder sb, string prefix)
     {
-        // Накопленная битовая строка по пути от корня
         string currentFullBits = accumulatedBits + node.BitString;
 
-        // Формируем строку узла
-        sb.Append(indent);
-        sb.Append(last ? "└─ " : "├─ ");
-        sb.Append(node.BitString);
+        sb.Append(indent)
+          .Append(last ? "└─ " : "├─ ")
+          .Append(node.BitString);
 
-        // Для конечных узлов добавляем текстовое представление
         if (node.IsEnd)
         {
             string text = BitHelper.BitStringToString(currentFullBits);
@@ -80,15 +79,17 @@ public partial class Trie
 
         sb.AppendLine();
 
-        // Рекурсивный обход дочерних узлов
+        // Обход потомков
         string newIndent = indent + (last ? "   " : "│  ");
+        List<TrieNode> children = new List<TrieNode>();
 
-        var sortedChildren = node.Children.OrderBy(c => c.BitString).ToList();
+        if (node.ZeroChild != null) children.Add(node.ZeroChild);
+        if (node.OneChild != null) children.Add(node.OneChild);
 
-        for (int i = 0; i < sortedChildren.Count; i++)
+        for (int i = 0; i < children.Count; i++)
         {
-            bool isLastChild = i == sortedChildren.Count - 1;
-            GetASCII_ChildrenRecursive(sortedChildren[i], newIndent, currentFullBits, isLastChild, sb,prefix);
+            bool isLastChild = i == children.Count - 1;
+            GetASCII_ChildrenRecursive(children[i], newIndent, currentFullBits, isLastChild, sb, prefix);
         }
     }
 

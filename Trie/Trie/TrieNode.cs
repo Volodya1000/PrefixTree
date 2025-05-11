@@ -11,14 +11,14 @@ public class TrieNode
     public string BitString { get; set; }
 
     /// <summary>
-    /// Левый потомок (бит = '0')
+    /// Дочерний узел для бита 0
     /// </summary>
-    public TrieNode Left { get; set; }
+    public TrieNode ZeroChild { get; set; }
 
     /// <summary>
-    /// Правый потомок (бит = '1')
+    /// Дочерний узел для бита 1
     /// </summary>
-    public TrieNode Right { get; set; }
+    public TrieNode OneChild { get; set; }
 
     /// <summary>
     /// Флаг окончания полного ключа в этом узле
@@ -28,8 +28,8 @@ public class TrieNode
     public TrieNode(string bitString)
     {
         BitString = bitString;
-        Left = null;
-        Right = null;
+        ZeroChild = null;
+        OneChild = null;
         IsEnd = false;
     }
 }
