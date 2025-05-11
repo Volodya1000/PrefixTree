@@ -119,9 +119,9 @@ public class TrieSubMenuPostfix
     {
         previusCurrentPreffix = _currentPrefix;
 
-
-        _outputBuffer.Add("Общий префикс обновляем на строку 1");
         _currentPrefix = ConcatCurrentPrefixWithPostfix(_postfix1);
+        _outputBuffer.Add($"Общий префикс обновляем на строку 1:{FormatBitString(_currentPrefix)}");
+       
         UpdateCurrentNode(_currentPrefix);
 
         string? rightBranchForPrefix1 = CurrentNode.RightBranch(tookFromRoot: currentNodeBitStoreCount);
@@ -153,14 +153,12 @@ public class TrieSubMenuPostfix
     {
         previusCurrentPreffix = _currentPrefix;
 
-
-
         _outputBuffer.Add("Сохраняем строку 4 в строку 1");
         _postfix1 = _postfix4;
 
-
-        _outputBuffer.Add("Общий префикс меняем на строку 4");
+       
         _currentPrefix = ConcatCurrentPrefixWithPostfix(_postfix4);
+        _outputBuffer.Add($"Общий префикс меняем на строку 4: {FormatBitString(_currentPrefix)}");
         UpdateCurrentNode(_currentPrefix);
 
 
