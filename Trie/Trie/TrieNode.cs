@@ -1,7 +1,7 @@
 ﻿namespace CritBit;
 
 /// <summary>
-/// Узел префиксного дерева для хранения битовых строк
+/// Узел бинарного префиксного дерева для хранения битовых строк
 /// </summary>
 public class TrieNode
 {
@@ -11,9 +11,14 @@ public class TrieNode
     public string BitString { get; set; }
 
     /// <summary>
-    /// Дочерние узлы
+    /// Левый потомок (бит = '0')
     /// </summary>
-    public List<TrieNode> Children { get; set; }
+    public TrieNode Left { get; set; }
+
+    /// <summary>
+    /// Правый потомок (бит = '1')
+    /// </summary>
+    public TrieNode Right { get; set; }
 
     /// <summary>
     /// Флаг окончания полного ключа в этом узле
@@ -23,7 +28,8 @@ public class TrieNode
     public TrieNode(string bitString)
     {
         BitString = bitString;
-        Children = new List<TrieNode>();
+        Left = null;
+        Right = null;
         IsEnd = false;
     }
 }

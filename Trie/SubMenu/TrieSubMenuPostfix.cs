@@ -258,13 +258,6 @@ public class TrieSubMenuPostfix
 
     private string ComputeComonPrefix()
     {
-        
-
-        //_outputBuffer.Add("Обновление общего префикса");
-        //int commomPrefixLength = FindCommonPrefixLength(ConcatCurrentPrefixWithPostfix(_postfix1), ConcatCurrentPrefixWithPostfix(_postfix4));
-        //string rezult = (_currentPrefix+_postfix1).Substring(0, commomPrefixLength);
-        //return rezult;
-
         _outputBuffer.Add("Обновление общего префикса");
         int commomPrefixLength = FindCommonPrefixLength(_postfix1, _postfix4);
         string rezult = _currentPrefix + _postfix1.Substring(0, commomPrefixLength);

@@ -150,7 +150,7 @@ public static class BitHelper
             if (str1[i] != str2[i])
                 return i - (i % 8);
         }
-        return maxLength - (maxLength % 8);
+        return maxLength;
     }
 
 

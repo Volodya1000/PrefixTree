@@ -201,4 +201,84 @@ public static class MiddlePrefixComputer
     {
         return postfix.Length >= 8 ? postfix.Substring(0, 8) : postfix.PadRight(8, '0');
     }
+
+
+
+    ///=====================
+
+    public static string ComputeMiddlePrefix1(string bitString1, string bitString2, Trie trie, bool roundUp)
+    {
+        // Определяем старшую и младшую строки
+        string high, low;
+        if (string.Compare(bitString1, bitString2) > 0)
+        {
+            high = bitString1;
+            low = bitString2;
+        }
+        else
+        {
+            high = bitString2;
+            low = bitString1;
+        }
+
+
+        int prefixLength = FindCommonPrefixLength(high, low);
+
+        string commonPrefix = high.Substring(0, prefixLength);
+
+        // Извлекаем постфиксы
+        string highPostfix = high.Substring(prefixLength);
+        string lowPostfix = low.Substring(prefixLength);
+
+        // Обрабатываем разные случаи постфиксов
+        if (highPostfix == "" && lowPostfix == "")
+        {
+            return commonPrefix;
+        }
+        else if (lowPostfix == "")
+        {
+            string upper = trie.UpperApril(commonPrefix, prefixLength);
+            string upperSuffix = upper.Substring(prefixLength, Math.Min(8, upper.Length - prefixLength));
+            upperSuffix = upperSuffix.PadRight(8, '0');
+
+            string highFirstByte = highPostfix.Length >= 8
+                ? highPostfix.Substring(0, 8)
+                : highPostfix.PadRight(8, '0');
+
+            return CombineParts(commonPrefix, upperSuffix, highFirstByte, roundUp);
+        }
+        else if (highPostfix == "")
+        {
+            string lower = trie.LowerApril(commonPrefix, prefixLength);
+            string lowerSuffix = lower.Substring(prefixLength, Math.Min(8, lower.Length - prefixLength));
+            lowerSuffix = lowerSuffix.PadRight(8, '0');
+
+            string lowFirstByte = lowPostfix.Length >= 8
+                ? lowPostfix.Substring(0, 8)
+                : lowPostfix.PadRight(8, '0');
+
+            return CombineParts(commonPrefix, lowerSuffix, lowFirstByte, roundUp);
+        }
+        else
+        {
+            string highFirstByte = highPostfix.Length >= 8
+                ? highPostfix.Substring(0, 8)
+                : highPostfix.PadRight(8, '0');
+
+            string lowFirstByte = lowPostfix.Length >= 8
+                ? lowPostfix.Substring(0, 8)
+                : lowPostfix.PadRight(8, '0');
+
+            return CombineParts(commonPrefix, highFirstByte, lowFirstByte, roundUp);
+        }
+    }
+
+    private static string CombineParts(string prefix, string part1, string part2, bool roundUp)
+    {
+        int a = BinaryToInt(part1);
+        int b = BinaryToInt(part2);
+        int average = roundUp ? (a + b + 1) / 2 : (a + b) / 2;
+        return prefix + IntToBinary(average).TrimEnd('0');
+    }
 }
+
