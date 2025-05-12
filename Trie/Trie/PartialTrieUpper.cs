@@ -11,20 +11,38 @@ public partial class Trie
             return root.BitString.Substring(tookFromRoot, k);
         }
 
-        // Инициализируем текущий путь, оставшиеся биты корня после tookFromRoot
         string currentPath = tookFromRoot < root.BitString.Length
             ? root.BitString.Substring(tookFromRoot)
             : "";
 
-        TrieNode child = root.OneChild ?? root.ZeroChild;
+        string keyPrefix = key.Substring(0, 8);
 
-        if (child == null) return null;
+        string res=null;
+        if (root.OneChild != null)
+             res = GetFromChilUpper(root.OneChild, currentPath, keyPrefix);
 
+        if (root.ZeroChild != null)
+        {
+            var zeroRez= GetFromChilUpper(root.ZeroChild, currentPath, keyPrefix);
+            if (zeroRez != null)
+                res = zeroRez;
+
+        }
+        return res;
+    }
+
+    private string? GetFromChilUpper(TrieNode child, string currentPath, string keyPrefix)
+    {
         if (child.BitString.Length >= 8)
-            return child.BitString.Substring(0, CalculateK(child.BitString.Length));
+        {
+            int k = CalculateK(child.BitString.Length);
+            string substring = child.BitString.Substring(0, k);
+            if (string.Compare(substring, keyPrefix) > 0)
+                return substring;
+        }
 
-        string result = null;
-        TraverseUpper(child, currentPath, key.Substring(0, 8), ref result);
+        string? result = null;
+        TraverseUpper(child, currentPath, keyPrefix, ref result);
         return result;
     }
 

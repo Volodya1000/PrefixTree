@@ -112,6 +112,7 @@ public class TrieSubMenuPostfix
         _currentPrefix = "";
         previusCurrentPreffix = "";
         CurrentNode = Root;
+        currentNodeBitStoreCount = 0;
         InitializePrefixes();
     }
 
@@ -122,7 +123,7 @@ public class TrieSubMenuPostfix
         _currentPrefix = ConcatCurrentPrefixWithPostfix(_postfix1);
         _outputBuffer.Add($"Общий префикс обновляем на строку 1:{FormatBitString(_currentPrefix)}");
        
-        UpdateCurrentNode(_currentPrefix);
+       UpdateCurrentNode(_currentPrefix);
 
         string? rightBranchForPrefix1 = CurrentNode.RightBranch(tookFromRoot: currentNodeBitStoreCount);
         if (rightBranchForPrefix1 != null)
@@ -131,22 +132,23 @@ public class TrieSubMenuPostfix
             _postfix4 = rightBranchForPrefix1;
         }
         else
+        {
+            _postfix4 = "";
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
+        }
 
-        string upperForPrefix1 = CurrentNode.LeftBranch(tookFromRoot: currentNodeBitStoreCount);
-
+        string upperForPrefix1 = CurrentNode.LeftBranch( tookFromRoot: currentNodeBitStoreCount);
         if (upperForPrefix1 != null)
         {
             _postfix1 = upperForPrefix1;
             _outputBuffer.Add($"Upper для строки 1: {FormatBitString(ConcatCurrentPrefixWithPostfix(upperForPrefix1))}");
         }
         else
+        {
+            _postfix1 = "";
             _outputBuffer.Add("Upper для строки 1 не существует");
-
-
-        ComputeComonPrefixAndUpdateCurrentNode();
-
-
+        }
+         ComputeComonPrefixAndUpdateCurrentNode();
     }
 
     private void HandleItem4()
@@ -169,7 +171,10 @@ public class TrieSubMenuPostfix
             _postfix4 = rightBranchForPrefix4;
         }
         else
+        {
+            _postfix4 = "";
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
+        }
 
         string upperForPrefix4 = CurrentNode.LeftBranch(tookFromRoot: currentNodeBitStoreCount);
 
@@ -178,7 +183,11 @@ public class TrieSubMenuPostfix
             _postfix1 = upperForPrefix4;
             _outputBuffer.Add($"Upper для строки 4: {FormatBitString(ConcatCurrentPrefixWithPostfix(upperForPrefix4))}");
         }
-
+        else
+        {
+            _postfix1 = "";
+            _outputBuffer.Add("Upper для строки 4 не существует");
+        }
         ComputeComonPrefixAndUpdateCurrentNode();
     }
 
@@ -186,6 +195,8 @@ public class TrieSubMenuPostfix
 
     private void HandleItem2()
     {
+        if (_postfix1 == _postfix4) return;
+
         previusCurrentPreffix = _currentPrefix;
 
         var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_postfix1, _postfix4, CurrentNode, roundUp: true, out string logs);
@@ -211,6 +222,8 @@ public class TrieSubMenuPostfix
     /// <summary> Вычисление нижней средней </summary>
     private void HandleItem3()
     {
+        if (_postfix1 == _postfix4) return;
+
         previusCurrentPreffix = _currentPrefix;
 
         var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_postfix1, _postfix4, CurrentNode, roundUp: true, out string logs);

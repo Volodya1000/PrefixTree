@@ -46,7 +46,7 @@ public partial class Trie
                 if (currentNode.OneChild != null && currentNode.OneChild.BitString.StartsWith(remaining))
                     return (currentNode.OneChild, currentNode.OneChild.BitString.Length, remaining.Length);
 
-                throw new InvalidOperationException($"Путь недостижим: {BitHelper.BitStringToString(bitString)}");
+                throw new InvalidOperationException($"Путь недостижим: {BitStringToString(bitString)}");
             }
         }
 
