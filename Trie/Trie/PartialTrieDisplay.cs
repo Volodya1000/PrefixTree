@@ -30,13 +30,13 @@ public partial class Trie
 
         sb.AppendLine();
 
-        // Рекурсивный обход потомков (сначала ZeroChild, затем OneChild)
+        // Рекурсивный обход потомков (сначала GetZeroChild(), затем GetOneChild())
         string newIndent = indent + (last ? "   " : "│  ");
         List<TrieNode> children = new List<TrieNode>();
 
-        // Собираем существующих потомков в порядке: ZeroChild -> OneChild
-        if (node.ZeroChild != null) children.Add(node.ZeroChild);
-        if (node.OneChild != null) children.Add(node.OneChild);
+        // Собираем существующих потомков в порядке: GetZeroChild() -> GetOneChild()
+        if (node.GetZeroChild() != null) children.Add(node.GetZeroChild());
+        if (node.GetOneChild() != null) children.Add(node.GetOneChild());
 
         for (int i = 0; i < children.Count; i++)
         {
@@ -58,8 +58,8 @@ public partial class Trie
         string accumulatedBits = prefix + rootRemaining;
 
         // Добавляем потомков корня
-        if (root.ZeroChild != null) rootChildren.Add(root.ZeroChild);
-        if (root.OneChild != null) rootChildren.Add(root.OneChild);
+        if (root.GetZeroChild() != null) rootChildren.Add(root.GetZeroChild());
+        if (root.GetOneChild() != null) rootChildren.Add(root.GetOneChild());
 
         for (int i = 0; i < rootChildren.Count; i++)
         {
@@ -104,10 +104,10 @@ public partial class Trie
         // Формируем отступы для следующих уровней
         string newIndent = indent + (last ? "   " : "│  ");
 
-        // Собираем потомков: ZeroChild -> OneChild
+        // Собираем потомков: GetZeroChild() -> GetOneChild()
         List<TrieNode> children = new List<TrieNode>();
-        if (node.ZeroChild != null) children.Add(node.ZeroChild);
-        if (node.OneChild != null) children.Add(node.OneChild);
+        if (node.GetZeroChild() != null) children.Add(node.GetZeroChild());
+        if (node.GetOneChild() != null) children.Add(node.GetOneChild());
 
         // Рекурсивный обход
         for (int i = 0; i < children.Count; i++)

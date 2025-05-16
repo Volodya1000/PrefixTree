@@ -15,7 +15,7 @@ public partial class Trie
         if (remainingBits.Length == 0) return;
 
         char currentBit = remainingBits[0];
-        TrieNode child = (currentBit == '0') ? node.ZeroChild : node.OneChild; 
+        TrieNode child = (currentBit == '0') ? node.GetZeroChild() : node.GetOneChild();
 
         if (child != null)
         {
@@ -31,12 +31,11 @@ public partial class Trie
         }
         else
         {
-            TrieNode newNode = new TrieNode(remainingBits);
-            newNode.IsEnd = true;
+            TrieNode newNode = new TrieNode(remainingBits) { IsEnd = true };
             if (currentBit == '0')
-                node.ZeroChild = newNode;
+                node.SetZeroChild(newNode);
             else
-                node.OneChild = newNode;
+                node.SetOneChild(newNode);
         }
     }
 
@@ -47,32 +46,31 @@ public partial class Trie
         string newRemaining = remaining.Substring(commonLen);
 
         TrieNode commonNode = new TrieNode(common);
+
         if (common[0] == '0')
-            parent.ZeroChild = commonNode;
+            parent.SetZeroChild(commonNode);
         else
-            parent.OneChild = commonNode;
+            parent.SetOneChild(commonNode);
 
         child.BitString = childRemaining;
         if (childRemaining[0] == '0')
-            commonNode.ZeroChild = child;
+            commonNode.SetZeroChild(child);
         else
-            commonNode.OneChild = child;
+            commonNode.SetOneChild(child);
 
         if (newRemaining.Length > 0)
         {
-            TrieNode newNode = new TrieNode(newRemaining);
-            newNode.IsEnd = true;
+            TrieNode newNode = new TrieNode(newRemaining) { IsEnd = true };
             if (newRemaining[0] == '0')
-                commonNode.ZeroChild = newNode;
+                commonNode.SetZeroChild(newNode);
             else
-                commonNode.OneChild = newNode;
+                commonNode.SetOneChild(newNode);
         }
         else
         {
             commonNode.IsEnd = true;
         }
     }
-
 
     /// <summary>
     /// Поиск длины общего префикса для двух строк

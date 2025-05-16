@@ -52,7 +52,7 @@ public class TrieSubMenuPostfix
     private void InitializePrefixes()
     {
         _postfix4 = CurrentNode.RightBranch(0);
-        _postfix1 = CurrentNode.LeftBranch(0);//CurrentNode.Upper(_currentPrefix, CurrentPrefixLength);
+        _postfix1 = CurrentNode.Upper("",0);//CurrentNode.Upper(_currentPrefix, CurrentPrefixLength);
     }
 
     /// <summary>
@@ -120,10 +120,12 @@ public class TrieSubMenuPostfix
     {
         previusCurrentPreffix = _currentPrefix;
 
+        string? upperForPrefix1 = CurrentNode.Upper(_postfix1,tookFromRoot: currentNodeBitStoreCount);
+
         _currentPrefix = ConcatCurrentPrefixWithPostfix(_postfix1);
         _outputBuffer.Add($"Общий префикс обновляем на строку 1:{FormatBitString(_currentPrefix)}");
        
-       UpdateCurrentNode(_currentPrefix);
+        UpdateCurrentNode(_currentPrefix);
 
         string? rightBranchForPrefix1 = CurrentNode.RightBranch(tookFromRoot: currentNodeBitStoreCount);
         if (rightBranchForPrefix1 != null)
@@ -136,8 +138,7 @@ public class TrieSubMenuPostfix
             _postfix4 = "";
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
         }
-
-        string upperForPrefix1 = CurrentNode.LeftBranch( tookFromRoot: currentNodeBitStoreCount);
+        
         if (upperForPrefix1 != null)
         {
             _postfix1 = upperForPrefix1;
@@ -176,7 +177,7 @@ public class TrieSubMenuPostfix
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
         }
 
-        string upperForPrefix4 = CurrentNode.LeftBranch(tookFromRoot: currentNodeBitStoreCount);
+        string upperForPrefix4 = CurrentNode.Upper(_currentPrefix, tookFromRoot: currentNodeBitStoreCount);
 
         if (upperForPrefix4 != null)
         {
@@ -304,8 +305,14 @@ public class TrieSubMenuPostfix
 
     private TrieNode FindCurrentPrefixNode(string bitString)
     {
-        (TrieNode newCurrentNode, _, currentNodeBitStoreCount) = CurrentNode.FindLastNodeInPath(bitString, tookFromRoot: currentNodeBitStoreCount);
+        (TrieNode newCurrentNode,currentNodeBitStoreCount) = CurrentNode.FindLastNodeInPath(bitString, tookFromRoot: currentNodeBitStoreCount);
         return newCurrentNode;
     }
+
+    public static bool IsLeaf(TrieNode node)
+    {
+        return node.GetZeroChild() == null && node.GetOneChild() == null;
+    }
+
     #endregion
 }

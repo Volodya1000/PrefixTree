@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using static System.Console;
-using static CritBit.BitHelper;
 
 namespace CritBit;
 public static class MiddlePrefixComputer
@@ -199,86 +197,53 @@ public static class MiddlePrefixComputer
 
     private static string GetFirstByte(string postfix)
     {
-        return postfix.Length >= 8 ? postfix.Substring(0, 8) : postfix.PadRight(8, '0');
+        return postfix.Length >= 8 ? postfix.Substring(0, 8) : postfix.PadRight(8, Consts.BIT_ZERO);
     }
 
 
 
     ///=====================
 
-    public static string ComputeMiddlePrefix1(string bitString1, string bitString2, Trie trie, bool roundUp)
+    public static string ComputeMiddlePrefix1(string low, string high, Trie trie, bool roundUp, int tookFromRoot)
     {
-        // Определяем старшую и младшую строки
-        string high, low;
-        if (string.Compare(bitString1, bitString2) > 0)
-        {
-            high = bitString1;
-            low = bitString2;
-        }
-        else
-        {
-            high = bitString2;
-            low = bitString1;
-        }
-
-
         int prefixLength = FindCommonPrefixLength(high, low);
-
         string commonPrefix = high.Substring(0, prefixLength);
 
-        // Извлекаем постфиксы
         string highPostfix = high.Substring(prefixLength);
         string lowPostfix = low.Substring(prefixLength);
 
-        // Обрабатываем разные случаи постфиксов
-        if (highPostfix == "" && lowPostfix == "")
+        string part1 = "";
+        string part2 = "";
+
+        if (highPostfix == "")
         {
-            return commonPrefix;
+            if (lowPostfix == "")
+                return commonPrefix;
+            else
+            {
+                string lower = trie.Lower(commonPrefix, tookFromRoot);
+                part1 = lower.GetByte().PadRight(8, BIT_ZERO);
+                part2 = lowPostfix.GetByte();
+            }
         }
-        else if (lowPostfix == "")
+        else 
         {
-            string upper = trie.Upper(commonPrefix, prefixLength);
-            string upperSuffix = upper.Substring(prefixLength, Math.Min(8, upper.Length - prefixLength));
-            upperSuffix = upperSuffix.PadRight(8, '0');
-
-            string highFirstByte = highPostfix.Length >= 8
-                ? highPostfix.Substring(0, 8)
-                : highPostfix.PadRight(8, '0');
-
-            return CombineParts(commonPrefix, upperSuffix, highFirstByte, roundUp);
+            if (lowPostfix == "")
+            {
+                string upper = trie.Upper(commonPrefix, tookFromRoot);
+                part1 = upper.GetByte().PadRight(8, BIT_ZERO);
+                part2 = highPostfix.GetByte();
+            }
+            else
+            {
+                part1 = highPostfix.GetByte();
+                part2 = lowPostfix.GetByte();
+            }
         }
-        else if (highPostfix == "")
-        {
-            string lower = trie.Lower(commonPrefix, prefixLength);
-            string lowerSuffix = lower.Substring(prefixLength, Math.Min(8, lower.Length - prefixLength));
-            lowerSuffix = lowerSuffix.PadRight(8, '0');
-
-            string lowFirstByte = lowPostfix.Length >= 8
-                ? lowPostfix.Substring(0, 8)
-                : lowPostfix.PadRight(8, '0');
-
-            return CombineParts(commonPrefix, lowerSuffix, lowFirstByte, roundUp);
-        }
-        else
-        {
-            string highFirstByte = highPostfix.Length >= 8
-                ? highPostfix.Substring(0, 8)
-                : highPostfix.PadRight(8, '0');
-
-            string lowFirstByte = lowPostfix.Length >= 8
-                ? lowPostfix.Substring(0, 8)
-                : lowPostfix.PadRight(8, '0');
-
-            return CombineParts(commonPrefix, highFirstByte, lowFirstByte, roundUp);
-        }
-    }
-
-    private static string CombineParts(string prefix, string part1, string part2, bool roundUp)
-    {
         int a = BinaryToInt(part1);
         int b = BinaryToInt(part2);
         int average = roundUp ? (a + b + 1) / 2 : (a + b) / 2;
-        return prefix + IntToBinary(average).TrimEnd('0');
+        return commonPrefix + IntToBinary(average).TrimEnd(BIT_ZERO);
     }
 }
 

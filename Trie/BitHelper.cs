@@ -186,9 +186,9 @@ public static class BitHelper
         else return bitString;
     }
 
-    public static int CalculateK(int x)
-    {
-        int k = (int)Math.Floor(x / 8.0) * 8;
-        return Math.Clamp(k, 8, 96);
-    }
+    //public static int CalculateK(int x)
+    //{
+    //    int k = (int)Math.Floor(x / 8.0) * 8;
+    //    return Math.Clamp(k, 8, 96);
+    //}
 }

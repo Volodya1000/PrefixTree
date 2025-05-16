@@ -29,7 +29,7 @@ public partial class Trie
         if (remainingBits.Length == 0)
             return true;
 
-        foreach (var child in new[] { node.ZeroChild, node.OneChild })
+        foreach (var child in new[] { node.GetZeroChild(), node.GetOneChild() })
         {
             if (child == null) continue;
 

@@ -1,5 +1,6 @@
 ﻿global using static CritBit.BitHelper;
 global using static System.Console;
+global using static CritBit.Consts;
 using System.Text;
 namespace CritBit;
 
@@ -11,7 +12,7 @@ class Program
 
         Trie trie = new Trie();
 
-        var _testData = GenerateTestData1();
+        var _testData = GenerateTestData();
 
         foreach (var item in _testData)
         {
@@ -74,8 +75,8 @@ class Program
     {
         string word = ReadLine().Trim();
         string bits = BitHelper.StringToBitString(word);
-        (_,int nodeStoreCount,int busyInPathCount)= trie.FindLastNodeInPath(bits,0);
-        WriteLine($"Хранит: {nodeStoreCount} Занято: {busyInPathCount}");
+        ( var node,int busyInPathCount)= trie.FindLastNodeInPath(bits,0);
+        WriteLine($"Хранит: {node.BitString.Length} Занято: {busyInPathCount}");
     }
 
     static void InsertCommand(Trie trie)

@@ -13,12 +13,19 @@ public class TrieNode
     /// <summary>
     /// Дочерний узел для бита 0
     /// </summary>
-    public TrieNode ZeroChild { get; set; }
+    private TrieNode ZeroChild;
 
     /// <summary>
     /// Дочерний узел для бита 1
     /// </summary>
-    public TrieNode OneChild { get; set; }
+    private TrieNode OneChild;
+
+
+    public TrieNode GetOneChild() => OneChild;
+    public void SetOneChild(TrieNode child) => OneChild = child;
+
+    public TrieNode GetZeroChild() => ZeroChild;
+    public void SetZeroChild(TrieNode child) => ZeroChild = child;
 
     /// <summary>
     /// Флаг окончания полного ключа в этом узле

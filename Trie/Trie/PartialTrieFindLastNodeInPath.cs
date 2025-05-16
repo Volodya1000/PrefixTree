@@ -2,7 +2,7 @@
 
 public partial class Trie
 {
-    public (TrieNode, int nodeStoreCount, int busyInPathCount) FindLastNodeInPath(string bitString, int tookFromRoot)
+    public (TrieNode, int busyInPathCount) FindLastNodeInPath(string bitString, int tookFromRoot)
     {
         // Проверка корректности параметра tookFromRoot
         if (tookFromRoot < 0 || tookFromRoot > root.BitString.Length)
@@ -20,37 +20,37 @@ public partial class Trie
 
         while (remaining.Length > 0)
         {
+            TrieNode zeroChild = currentNode.GetZeroChild();
+            TrieNode oneChild = currentNode.GetOneChild();
             bool foundFullMatch = false;
 
-            // Проверяем ZeroChild
-            if (currentNode.ZeroChild != null && remaining.StartsWith(currentNode.ZeroChild.BitString))
+            if (zeroChild != null && remaining.StartsWith(zeroChild.BitString))
             {
-                remaining = remaining.Substring(currentNode.ZeroChild.BitString.Length);
-                currentNode = currentNode.ZeroChild;
+                remaining = remaining.Substring(zeroChild.BitString.Length);
+                currentNode = zeroChild;
                 foundFullMatch = true;
             }
-            // Проверяем OneChild, если ZeroChild не подошёл
-            else if (currentNode.OneChild != null && remaining.StartsWith(currentNode.OneChild.BitString))
+            else if (oneChild != null && remaining.StartsWith(oneChild.BitString))
             {
-                remaining = remaining.Substring(currentNode.OneChild.BitString.Length);
-                currentNode = currentNode.OneChild;
+                remaining = remaining.Substring(oneChild.BitString.Length);
+                currentNode = currentNode.GetOneChild();
                 foundFullMatch = true;
             }
 
             if (!foundFullMatch)
             {
                 // Поиск частичного совпадения (remaining - префикс битовой строки потомка)
-                if (currentNode.ZeroChild != null && currentNode.ZeroChild.BitString.StartsWith(remaining))
-                    return (currentNode.ZeroChild, currentNode.ZeroChild.BitString.Length, remaining.Length);
+                if (zeroChild != null && zeroChild.BitString.StartsWith(remaining))
+                    return (zeroChild, remaining.Length);
 
-                if (currentNode.OneChild != null && currentNode.OneChild.BitString.StartsWith(remaining))
-                    return (currentNode.OneChild, currentNode.OneChild.BitString.Length, remaining.Length);
+                if (oneChild != null && oneChild.BitString.StartsWith(remaining))
+                    return (oneChild, remaining.Length);
 
                 throw new InvalidOperationException($"Путь недостижим: {BitStringToString(bitString)}");
             }
         }
 
         // Все биты обработаны, возвращаем текущий узел
-        return (currentNode, currentNode.BitString.Length, currentNode.BitString.Length);
+        return (currentNode, currentNode.BitString.Length);
     }
 }
