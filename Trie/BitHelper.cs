@@ -190,4 +190,9 @@ public static class BitHelper
     {
         return Math.Min((int)(x / 8.0) * 8, POSTFIX_LIMIT);
     }
+
+    public static bool IsLeaf(TrieNode node)
+    {
+        return node.GetZeroChild() == null && node.GetOneChild() == null;
+    }
 }

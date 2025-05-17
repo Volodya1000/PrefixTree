@@ -23,7 +23,7 @@ public partial class Trie
             res = GetFromChildLower(oneChild, currentPath, keyPrefix);
         if (res == null)
         {
-            TrieNode? zeroChild = root.GetOneChild();
+            TrieNode? zeroChild = root.GetZeroChild();
             if (zeroChild != null)
                 res = GetFromChildLower(zeroChild, currentPath, keyPrefix);
         }
@@ -59,13 +59,13 @@ public partial class Trie
         TrieNode? oneChild = node.GetOneChild();
         if (oneChild != null)
         {
-            bool zeroResult = UpperDFS(oneChild, current, key, ref result);
+            bool zeroResult = LowerDFS(oneChild, current, key, ref result);
             if (zeroResult)
                 return true;
         }
         TrieNode? zeroChild = node.GetZeroChild();
         if (zeroChild != null)
-            return UpperDFS(zeroChild, current, key, ref result);
+            return LowerDFS(zeroChild, current, key, ref result);
         return false;
     }
 }

@@ -46,7 +46,7 @@ public partial class Trie
                     return (oneChild, remaining.Length);
 
                 throw new InvalidOperationException($"Путь недостижим: {BitStringToString(bitString)}");
-                return (null, -1);
+                //return (null, -1);
             }
         }
 

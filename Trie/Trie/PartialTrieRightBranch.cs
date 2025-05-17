@@ -5,7 +5,7 @@ public partial class Trie
 
     public string? RightBranch(int tookFromRoot)
     {
-        TrieNode child = root.GetOneChild() ?? root.GetZeroChild();
+        TrieNode ? child = root.GetOneChild() ?? root.GetZeroChild();
         if (child == null) return null;
 
         string result = "";

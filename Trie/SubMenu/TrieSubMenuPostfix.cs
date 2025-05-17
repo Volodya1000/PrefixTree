@@ -48,7 +48,7 @@ public class TrieSubMenuPostfix
     private void InitializePrefixes()
     {
         _postfix4 = CurrentNode.RightBranch(0);
-        _postfix1 = CurrentNode.Upper("",0);//CurrentNode.Upper(_currentPrefix, CurrentPrefixLength);
+        _postfix1 = CurrentNode.Upper("",0);
     }
 
     /// <summary>
@@ -299,11 +299,5 @@ public class TrieSubMenuPostfix
         (TrieNode newCurrentNode,currentNodeBitStoreCount) = CurrentNode.FindLastNodeInPath(bitString, tookFromRoot: currentNodeBitStoreCount);
         return newCurrentNode;
     }
-
-    public static bool IsLeaf(TrieNode node)
-    {
-        return node.GetZeroChild() == null && node.GetOneChild() == null;
-    }
-
     #endregion
 }
