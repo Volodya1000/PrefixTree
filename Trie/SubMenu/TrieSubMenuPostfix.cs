@@ -17,10 +17,6 @@ public class TrieSubMenuPostfix
 
     private int currentNodeBitStoreCount;
 
-    private int previusCurrentPreffixLength=> previusCurrentPreffix.Length;
-
-    private string previusCurrentPreffix;
-
     public int CurrentPrefixLength => _currentPrefix.Length;
 
     public TrieSubMenuPostfix(Trie trie)
@@ -110,7 +106,6 @@ public class TrieSubMenuPostfix
     private void StartFromRoot()
     {
         _currentPrefix = "";
-        previusCurrentPreffix = "";
         CurrentNode = Root;
         currentNodeBitStoreCount = 0;
         InitializePrefixes();
@@ -118,10 +113,6 @@ public class TrieSubMenuPostfix
 
     private void HandleItem1()
     {
-        previusCurrentPreffix = _currentPrefix;
-
-        //string? upperForPrefix1 = CurrentNode.Upper(_postfix1,tookFromRoot: currentNodeBitStoreCount);
-
         _currentPrefix = ConcatCurrentPrefixWithPostfix(_postfix1);
         _outputBuffer.Add($"Общий префикс обновляем на строку 1:{FormatBitString(_currentPrefix)}");
        
@@ -156,8 +147,6 @@ public class TrieSubMenuPostfix
 
     private void HandleItem4()
     {
-        previusCurrentPreffix = _currentPrefix;
-
         _outputBuffer.Add("Сохраняем строку 4 в строку 1");
         _postfix1 = _postfix4;
 
@@ -179,7 +168,7 @@ public class TrieSubMenuPostfix
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
         }
 
-        string upperForPrefix4 = CurrentNode.Upper(_currentPrefix, tookFromRoot: currentNodeBitStoreCount);
+        string upperForPrefix4 = CurrentNode.Upper("", tookFromRoot: currentNodeBitStoreCount);
 
         if (upperForPrefix4 != null)
         {
@@ -199,9 +188,6 @@ public class TrieSubMenuPostfix
     private void HandleItem2()
     {
         if (_postfix1 == _postfix4) return;
-
-        previusCurrentPreffix = _currentPrefix;
-
         var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_postfix1, _postfix4, CurrentNode, roundUp: true, out string logs);
         _outputBuffer.Add(logs);
         _outputBuffer.Add($"Средняя: {FormatBitString(ConcatCurrentPrefixWithPostfix(mid))}");
@@ -226,9 +212,6 @@ public class TrieSubMenuPostfix
     private void HandleItem3()
     {
         if (_postfix1 == _postfix4) return;
-
-        previusCurrentPreffix = _currentPrefix;
-
         var mid = MiddlePrefixComputer.ComputeMiddlePrefix(_postfix1, _postfix4, CurrentNode, roundUp: true, out string logs);
         _outputBuffer.Add(logs);
         _outputBuffer.Add($"Средняя: {FormatBitString(ConcatCurrentPrefixWithPostfix(mid))}");
@@ -257,7 +240,7 @@ public class TrieSubMenuPostfix
             }
         }
     }
-
+    
     private string ComputeComonPrefix()
     {
         _outputBuffer.Add("Обновление общего префикса");
@@ -283,7 +266,6 @@ public class TrieSubMenuPostfix
 
             int commomPrefixLength = FindCommonPrefixLength(savePrefix, _currentPrefix);
             string rezult = _currentPrefix.Substring(commomPrefixLength);
-            previusCurrentPreffix = "";
             UpdateCurrentNode(rezult);
         }
     }
@@ -302,12 +284,12 @@ public class TrieSubMenuPostfix
 
     private void UpdateCurrentNode(string bitString)
     {
-        TrieNode newCurrentNode = FindCurrentPrefixNode(bitString.Substring(previusCurrentPreffixLength));
-//        if (IsLeaf(newCurrentNode))
-//        {
-//            _currentPrefix = newCurrentNode.BitString;
-//;            Set1and4asCurrent();
-//        }
+        TrieNode newCurrentNode = FindCurrentPrefixNode(bitString.Substring(currentNodeBitStoreCount));
+        //        if (IsLeaf(newCurrentNode))
+        //        {
+        //            _currentPrefix = newCurrentNode.BitString;
+        //;            Set1and4asCurrent();
+        //        }
 
         CurrentNode = new Trie(newCurrentNode);
     }
