@@ -10,8 +10,8 @@ public partial class Trie
         int availableBits = root.BitString.Length - tookFromRoot;
         if (availableBits >= 8)
         {
-            int k = Math.Min(root.BitString.Length, POSTFIX_LIMIT);
-            string substring = root.BitString.Substring(0, k);
+            int k = CalculateK(availableBits);
+            string substring = root.BitString.Substring(tookFromRoot, k);
             return string.Compare(substring, keyPrefix) > 0 ? substring: null;
         }
 
@@ -31,7 +31,7 @@ public partial class Trie
     {
         if (child.BitString.Length >= 8)
         {
-            int k = Math.Min(child.BitString.Length, POSTFIX_LIMIT);
+            int k = CalculateK(child.BitString.Length); 
             string substring = child.BitString.Substring(0, k);
             return string.Compare(substring, keyPrefix) > 0 ? substring : null;
         }

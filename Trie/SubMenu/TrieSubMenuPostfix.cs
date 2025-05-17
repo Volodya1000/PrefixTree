@@ -120,12 +120,14 @@ public class TrieSubMenuPostfix
     {
         previusCurrentPreffix = _currentPrefix;
 
-        string? upperForPrefix1 = CurrentNode.Upper(_postfix1,tookFromRoot: currentNodeBitStoreCount);
+        //string? upperForPrefix1 = CurrentNode.Upper(_postfix1,tookFromRoot: currentNodeBitStoreCount);
 
         _currentPrefix = ConcatCurrentPrefixWithPostfix(_postfix1);
         _outputBuffer.Add($"Общий префикс обновляем на строку 1:{FormatBitString(_currentPrefix)}");
        
         UpdateCurrentNode(_currentPrefix);
+
+        string? upperForPrefix1 = CurrentNode.Upper("", tookFromRoot: currentNodeBitStoreCount);
 
         string? rightBranchForPrefix1 = CurrentNode.RightBranch(tookFromRoot: currentNodeBitStoreCount);
         if (rightBranchForPrefix1 != null)
@@ -300,7 +302,14 @@ public class TrieSubMenuPostfix
 
     private void UpdateCurrentNode(string bitString)
     {
-        CurrentNode = new Trie(FindCurrentPrefixNode(bitString.Substring(previusCurrentPreffixLength)));
+        TrieNode newCurrentNode = FindCurrentPrefixNode(bitString.Substring(previusCurrentPreffixLength));
+//        if (IsLeaf(newCurrentNode))
+//        {
+//            _currentPrefix = newCurrentNode.BitString;
+//;            Set1and4asCurrent();
+//        }
+
+        CurrentNode = new Trie(newCurrentNode);
     }
 
     private TrieNode FindCurrentPrefixNode(string bitString)

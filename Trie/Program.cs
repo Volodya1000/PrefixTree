@@ -12,7 +12,7 @@ class Program
 
         Trie trie = new Trie();
 
-        var _testData = GenerateTestData();
+        var _testData = GenerateTestData1();
 
         foreach (var item in _testData)
         {

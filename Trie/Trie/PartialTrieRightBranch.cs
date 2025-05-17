@@ -15,7 +15,7 @@ public partial class Trie
 
         if (child.BitString.Length >= 8)
         {
-            int k = Math.Min(child.BitString.Length, POSTFIX_LIMIT);
+            int k = CalculateK(child.BitString.Length);
             result += child.BitString.Substring(0, k);
             return result;
         }
