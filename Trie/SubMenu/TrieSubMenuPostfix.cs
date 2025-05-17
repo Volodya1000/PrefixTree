@@ -118,10 +118,8 @@ public class TrieSubMenuPostfix
        
         UpdateCurrentNode(_currentPrefix);
 
-        string? upperForPrefix1 = CurrentNode.Upper("", tookFromRoot: currentNodeBitStoreCount);
-
         string? rightBranchForPrefix1 = CurrentNode.RightBranch(tookFromRoot: currentNodeBitStoreCount);
-        if (rightBranchForPrefix1 != null)
+        if (!String.IsNullOrEmpty(rightBranchForPrefix1))
         {
             _outputBuffer.Add($"RightBranch для строки 1: {FormatBitString(ConcatCurrentPrefixWithPostfix(rightBranchForPrefix1))}");
             _postfix4 = rightBranchForPrefix1;
@@ -131,8 +129,10 @@ public class TrieSubMenuPostfix
             _postfix4 = "";
             _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
         }
-        
-        if (upperForPrefix1 != null)
+
+        string? upperForPrefix1 = CurrentNode.Upper("", tookFromRoot: currentNodeBitStoreCount);
+
+        if (!String.IsNullOrEmpty(upperForPrefix1))
         {
             _postfix1 = upperForPrefix1;
             _outputBuffer.Add($"Upper для строки 1: {FormatBitString(ConcatCurrentPrefixWithPostfix(upperForPrefix1))}");
@@ -157,7 +157,7 @@ public class TrieSubMenuPostfix
 
 
         string? rightBranchForPrefix4 = CurrentNode.RightBranch(tookFromRoot: currentNodeBitStoreCount);
-        if (rightBranchForPrefix4 != null)
+        if (!String.IsNullOrEmpty(rightBranchForPrefix4))
         {
             _outputBuffer.Add($"RightBranch для строки 4 существует: {FormatBitString(ConcatCurrentPrefixWithPostfix(rightBranchForPrefix4))}");
             _postfix4 = rightBranchForPrefix4;
@@ -165,12 +165,12 @@ public class TrieSubMenuPostfix
         else
         {
             _postfix4 = "";
-            _outputBuffer.Add("RightBranch для строки 1 НЕ существует");
+            _outputBuffer.Add("RightBranch для строки 4 НЕ существует");
         }
 
-        string upperForPrefix4 = CurrentNode.Upper("", tookFromRoot: currentNodeBitStoreCount);
+        string? upperForPrefix4 = CurrentNode.Upper("", tookFromRoot: currentNodeBitStoreCount);
 
-        if (upperForPrefix4 != null)
+        if (!String.IsNullOrEmpty(upperForPrefix4))
         {
             _postfix1 = upperForPrefix4;
             _outputBuffer.Add($"Upper для строки 4: {FormatBitString(ConcatCurrentPrefixWithPostfix(upperForPrefix4))}");

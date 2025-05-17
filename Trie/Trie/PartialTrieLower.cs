@@ -1,9 +1,8 @@
-﻿
-namespace CritBit;
+﻿namespace CritBit;
 
 public partial class Trie
 {
-    public string Lower(string key, int tookFromRoot)
+    public string? Lower(string key, int tookFromRoot)
     {
         string keyPrefix = key.Substring(0, 8);
         int availableBits = root.BitString.Length - tookFromRoot;
@@ -18,14 +17,18 @@ public partial class Trie
             ? root.BitString.Substring(tookFromRoot)
             : "";
 
-        string res = null;
-        if (root.GetOneChild() != null)
-            res = GetFromChildLower(root.GetOneChild(), currentPath, keyPrefix);
-        if (res == null && root.GetZeroChild() != null)
-            res = GetFromChildLower(root.GetZeroChild(), currentPath, keyPrefix);
+        string? res = null;
+        TrieNode? oneChild = root.GetOneChild();
+        if (oneChild != null)
+            res = GetFromChildLower(oneChild, currentPath, keyPrefix);
+        if (res == null)
+        {
+            TrieNode? zeroChild = root.GetOneChild();
+            if (zeroChild != null)
+                res = GetFromChildLower(zeroChild, currentPath, keyPrefix);
+        }
         return res;
     }
-
 
     private string? GetFromChildLower(TrieNode child, string currentPath, string keyPrefix)
     {
@@ -53,17 +56,18 @@ public partial class Trie
             result = current;
             return true;
         }
-        if (node.GetOneChild() != null)
+        TrieNode? oneChild = node.GetOneChild();
+        if (oneChild != null)
         {
-            bool zeroResult = LowerDFS(node.GetOneChild(), current, key, ref result);
+            bool zeroResult = UpperDFS(oneChild, current, key, ref result);
             if (zeroResult)
                 return true;
         }
-        if (node.GetZeroChild() != null)
-            return LowerDFS(node.GetZeroChild(), current, key, ref result);
+        TrieNode? zeroChild = node.GetZeroChild();
+        if (zeroChild != null)
+            return UpperDFS(zeroChild, current, key, ref result);
         return false;
     }
-
 }
 
 

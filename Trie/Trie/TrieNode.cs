@@ -21,10 +21,10 @@ public class TrieNode
     private TrieNode OneChild;
 
 
-    public TrieNode GetOneChild() => OneChild;
+    public TrieNode ?GetOneChild() => OneChild;
     public void SetOneChild(TrieNode child) => OneChild = child;
 
-    public TrieNode GetZeroChild() => ZeroChild;
+    public TrieNode ?GetZeroChild() => ZeroChild;
     public void SetZeroChild(TrieNode child) => ZeroChild = child;
 
     /// <summary>

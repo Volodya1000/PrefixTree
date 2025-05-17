@@ -2,7 +2,7 @@
 
 public partial class Trie
 {
-    public (TrieNode, int busyInPathCount) FindLastNodeInPath(string bitString, int tookFromRoot)
+    public (TrieNode, int lastNodeBitBusyInPathCount) FindLastNodeInPath(string bitString, int tookFromRoot)
     {
         // Проверка корректности параметра tookFromRoot
         if (tookFromRoot < 0 || tookFromRoot > root.BitString.Length)
@@ -17,7 +17,6 @@ public partial class Trie
 
         TrieNode currentNode = root;
         string remaining = bitString.Substring(rootSubstring.Length); // Обрезаем проверенную часть
-
         while (remaining.Length > 0)
         {
             TrieNode zeroChild = currentNode.GetZeroChild();
@@ -33,7 +32,7 @@ public partial class Trie
             else if (oneChild != null && remaining.StartsWith(oneChild.BitString))
             {
                 remaining = remaining.Substring(oneChild.BitString.Length);
-                currentNode = currentNode.GetOneChild();
+                currentNode = oneChild;
                 foundFullMatch = true;
             }
 
@@ -47,6 +46,7 @@ public partial class Trie
                     return (oneChild, remaining.Length);
 
                 throw new InvalidOperationException($"Путь недостижим: {BitStringToString(bitString)}");
+                return (null, -1);
             }
         }
 

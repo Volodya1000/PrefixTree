@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace CritBit;
+﻿namespace CritBit;
 
 public partial class Trie
 {
@@ -19,11 +17,16 @@ public partial class Trie
             ? root.BitString.Substring(tookFromRoot)
             : "";
 
-        string res=null;
-        if (root.GetZeroChild() != null)
-            res = GetFromChildUpper(root.GetZeroChild(), currentPath, keyPrefix);
-        if (res == null&& root.GetOneChild()!=null)
-            res = GetFromChildUpper(root.GetOneChild(), currentPath, keyPrefix);
+        string ? res=null;
+        TrieNode? zeroChild = root.GetZeroChild();
+        if (zeroChild != null)
+            res = GetFromChildUpper(zeroChild, currentPath, keyPrefix);
+        if (res == null)
+        {
+            TrieNode? oneChild = root.GetOneChild();
+            if(oneChild!=null)
+                res = GetFromChildUpper(oneChild, currentPath, keyPrefix);
+        }
         return res;
     }
 
@@ -53,14 +56,16 @@ public partial class Trie
             result = current;
             return true;
         }
-        if (node.GetZeroChild() != null)
+        TrieNode? zeroChild = node.GetZeroChild();
+        if (zeroChild != null)
         {
-            bool zeroResult = UpperDFS(node.GetZeroChild(), current, key, ref result);
+            bool zeroResult = UpperDFS(zeroChild, current, key, ref result);
             if (zeroResult)
                 return true;
         }
-        if(node.GetOneChild() != null)
-            return UpperDFS(node.GetOneChild(), current, key, ref result);
+        TrieNode? oneChild = node.GetOneChild();
+        if (oneChild != null)
+            return UpperDFS(oneChild, current, key, ref result);
         return false;
     }
 }
