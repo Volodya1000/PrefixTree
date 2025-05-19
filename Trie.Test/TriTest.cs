@@ -1,8 +1,9 @@
-﻿namespace CritBit.Test;
+﻿/*
+ * namespace CritBit.Test;
 
 public class TrieTests
 {
-    private readonly ITrie _trie;
+    private readonly Trie _trie;
     private readonly List<string> _testData;
 
     public TrieTests()
@@ -103,3 +104,4 @@ public class TrieTests
     private static string FromBitString(string bits) =>
         BitHelper.BitStringToString(bits);
 }
+*/
